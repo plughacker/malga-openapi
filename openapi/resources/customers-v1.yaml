@@ -505,12 +505,20 @@ components:
         error:
           type: object
           allOf:
-            - $ref: "#/components/schemas/ErrorItem"
+            - $ref: '#/components/schemas/ErrorItem'
     ErrorItem:
       properties:
         type:
           type: string
-          enum: [api_error, bad_request, invalid_request_error, card_declined]
+          enum:
+            - api_error
+            - bad_request
+            - invalid_request_error
+            - card_declined
+            - conflict
+        code:
+          type: string
+          description: Código de retorno da erro
         declinedCode:
           type: string
           description: Código de retorno da transação em caso de falha na autorização
