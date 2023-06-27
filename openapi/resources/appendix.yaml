@@ -1,0 +1,658 @@
+openapi: 3.0.1
+servers:
+  - url: "https://api.malga.io"
+    description: Production
+info:
+  version: "0.5"
+  title: Appendix
+tags:
+  - name: Table of types
+    description: |
+
+      # Providers and payment methods supported
+
+      | Provedor       | Cartão  | Boleto | Pix   | Split | 3DS2 | Descrição       |
+      | -------------  |---      |---     |---    |---    |---   |---------        |
+      | `ADYEN`        | YES     | YES    | YES   | NO    | YES  | Adyen           |
+      | `BB`           | NO      | NO     | YES   | NO    | NO   | Banco do Brasil |
+      | `BRAINTREE`    | YES     | NO     | NO    | NO    | NO   | Braintree       |
+      | `BRASPAG`      | YES     | NO     | NO    | YES   | NO   | Braspag         |
+      | `BS2_BOLETO`   | NO      | YES    | NO    | NO    | NO   | Banco BS2 Boleto|
+      | `BS2`          | NO      | NO     | YES   | NO    | NO   | Banco BS2       |
+      | `CIELO`        | YES     | NO     | NO    | NO    | NO   | Cielo           |
+      | `GETNET`       | YES     | YES    | YES   | NO    | NO   | Getnet          |
+      | `KLAP`         | YES     | NO     | NO    | NO    | NO   | Klap            |
+      | `MERCADO_PAGO` | YES     | YES    | YES   | NO    | NO   | Mercado Pago    |
+      | `PAGARME`      | YES     | YES    | YES   | YES   | NO   | Pagar.me        |
+      | `PAGSEGURO`    | YES     | NO     | YES   | NO    | NO   | PagSeguro       |
+      | `REDE`         | YES     | NO     | NO    | NO    | NO   | Rede            |
+      | `STRIPE`       | YES     | YES    | NO    | NO    | NO   | Stripe          |
+      | `ZOOP`         | YES     | YES    | YES   | YES   | NO   | Zoop            |
+      | `SANDBOX`      | YES     | YES    | YES   | YES   | YES  | Simulator used to authorized payments in sandbox |
+
+      # Antifraud Providers
+      | Provider      | Realtime | Async |  Description  |
+      | ------------  |---       |---    |---------      |
+      | `CLEARSALE`   | YES      | NO    | Clearsale Realtime Decision and Behaviour Analytics |
+
+      # Table of declined codes
+
+      | DeclinedCode             | ResponseMessage       | O que fazer (ABECS) |
+      | --------------------------|-----------  | --------------- |
+      | *card_not_supported*        | The card does not support this type of purchase | UTILIZE FUNÇÃO DÉBITO |
+      | *expired_card*              | The card expiration date is invalid | VERIFIQUE OS DADOS DO CARTÃO |
+      | *fraud_confirmed*           | The charge has been declined for confirmed fraud |  TRANSAÇÃO NÃO PERMITIDA PARA O CARTÃO - NÃO TENTE NOVAMENTE |
+      | *fraud_suspect*             | The charge has been declined for suspect it is fraudulent |   CONTATE A CENTRAL DO SEU CARTÃO |
+      | *generic*                   | The card has been declined for a unknown reason |   CONTATE A CENTRAL DO SEU CARTÃO |
+      | *insufficient_funds*        | The card has insufficient funds |  NÃO AUTORIZADA |
+      | *invalid_amount*            | The charge amount is not valid or exceeded maximum allowed  |  VALOR DA TRANSAÇÃO NÃO PERMITIDO - NÃO TENTE NOVAMENTE |
+      | *invalid_cvv*               | The security code is invalid  | SENHA INVÁLIDA |
+      | *invalid_data*              | The card has been declined for invalid data | VERIFIQUE OS DADOS DO CARTÃO |
+      | *invalid_installment*       | The charge has been declined because invalid number of installments | PARCELAMENTO INVÁLIDO - NÃO TENTE NOVAMENTE |
+      | *invalid_merchant*          | The charge has been declined because merchant is not valid  | TRANSAÇÃO NÃO PERMITIDA - NÃO TENTE NOVAMENTE |
+      | *invalid_merchant*          | The charge has been declined because merchant is not valid  | CONTA ORIGEM INVÁLIDA - NÃO TENTE NOVAMENTE |
+      | *invalid_number*            | The card number is invalid  | VERIFIQUE OS DADOS DO CARTÃO |
+      | *invalid_pin*               | The card has been declined because pin is invalid | SENHA INVÁLIDA - NÃO TENTE NOVAMENTE |
+      | *issuer_not_available*      | The card issuer could not be reached, charge not authorized | DADOS DO CARTÃO INVÁLIDO - NÃO TENTE NOVAMENTE |
+      | *lost_card*                 | The card has been declined because the card is reported lost  | TRANSAÇÃO NÃO PERMITIDA - NÃO TENTE NOVAMENTE |
+      | *not_permitted*             | The charge is not permited to the card  | TRANSAÇÃO NÃO PERMITIDA PARA O CARTÃO- NÃO TENTE NOVAMENTE |
+      | *pickup_card*               | The card cannot be used to make this charges  | CONTATE A CENTRAL DO SEU CARTÃO - NÃO TENTE NOVAMENTE |
+      | *pin_try_exceeded*          | The card has been declined because exceeded maximum pin tries | EXCEDIDAS TENTATIVAS DE SENHA.CONTATE A CENTRAL DO SEU CARTÃO |
+      | *restricted_card*           | The card cannot be used to make this charge | DESBLOQUEIE O CARTÃO |
+      | *security_violation*        | The card has been declined for a unknown reason | VERIFIQUE OS DADOS DO CARTÃO |
+      | *service_not_allowed*       | The card has been declined because do not support international charge  | CARTÃO NÃO PERMITE TRANSAÇÃO INTERNACIONAL |
+      | *stolen_card*               | The card has been declined because the card is reported stolen  | TRANSAÇÃO NÃO PERMITIDA - NÃO TENTE NOVAMENTE |
+      | *transaction_not_allowed*   | The card has been declined for a unknown reason | ERRO NO CARTÃO - NÃO TENTE NOVAMENTE |
+      | *try_again*                 | The card has been declined for a unknown reason | REFAZER A TRANSAÇÃO |
+
+      # Table of MCCs
+
+      |MCC | Descrição |
+      |--------|-----------------|
+      |*742*  | VETERINARIA |
+      |*744*  | Carefree Resorts |
+      |*763*  | COOPERATIVA AGRÍCOLA |
+      |*780*  | SERVIÇOS DE PAISAGISMO E HORTICULTURA |
+      |*1520* |  EMPREITEIROS EM GERAL - COMERCIAL E RESIDENCIAL |
+      |*1711* |  PREST. DE SERV. PARA AR COND., ENCANAMENTO E AQUEC. |
+      |*1731* |  ELETRICISTAS E SERVIÇOS ELÉTRICOS |
+      |*1740* |  PEDREIROS E SERVIÇOS DE INSTALAÇÃO |
+      |*1750* |  MARCENEIROS E SERVIÇOS DE CARPINTARIA |
+      |*1761* |  METALURGICOS |
+      |*1771* |  EMPREITEIO PARA SERVIÇOS ESPECIALIZADO |
+      |*1799* |  DEMAIS SVS DE REFORMA E CONSTRUÇÃO NÃO-CLASSIFICADOS |
+      |*2741* |  EDITORAS - PUBLICAÇÕES E IMPRESSÕES |
+      |*2791* |  TYPESETTING, PLATE MAKING AND RELATED SERVICES |
+      |*2842* |  SERVIÇOS DE LIMPEZA E POLIMENTO |
+      |*4011* |  TRANSPORTE FERROVIÁRIO DE CARGA |
+      |*4111* |  TRANSPORTE LOCAL DE PASSAGEIROS, INCLUINDO BALSAS |
+      |*4112* |  TRANSPORTE DE PASSAGEIROS EM TREM (LONGA DISTÂNCIA) |
+      |*4119* |  AMBULANCIAS |
+      |*4121* |  LIMUSINES E TÁXIS (TAXICABS AND LIMOUSINES) |
+      |*4131* |  COMPANHIAS DE ONIBUS |
+      |*4214* |  TRANSPORTE DE CARGA RODOVIÁRIO E ARMAZENAMENTO |
+      |*4215* |  CORREIOS - AÉREO, TERRESTRE E TRANSITÓRIOS |
+      |*4225* |  ARMAZENAM. PROD AGRÍCOLAS,MERCAD REFRIGERADAS,BENS DOMÉSTICO |
+      |*4411* |  LINHAS DE CRUZEROS (CRUISE LINES) |
+      |*4457* |  ALUGUEL E ARRENDAMENTO DE BARCOS, ESQUIS E IATES |
+      |*4468* |  MARINAS, SERVIÇOS E FORNECEDORES |
+      |*4511* |  OUTRAS CIAS AÉREAS |
+      |*4582* |  AEROPORTOS E SERVIÇOS LIGADOS A AERONAVES |
+      |*4722* |  AGÊNCIAS DE VIAGENS (TRAVEL AGENCIES) |
+      |*4723* |  AGÊNCIAS DE VIAGEM TUI (TUI TRAVEL AGENCY) |
+      |*4784* |  PEDÁGIOS |
+      |*4789* |  SERVIÇOS DE TRANSPORTE |
+      |*4812* |  TELEFONES E EQUIPAMENTOS DE TELECOMUN. |
+      |*4813* |  SERVIÇOS DE TELEC.- CHAM. LOCAIS E LONGA DISTÂNCIA |
+      |*4814* |  SERVIÇOS DE TELECOMUNICAÇÃO |
+      |*4816* |  REDES DE COMPUTADORES / SERVIÇOS DE INFORMAÇÃO |
+      |*4821* |  TELEGRAFO |
+      |*4829* |  ORDENS DE PAGAMENTO POR TRANSFERÊNCIA BANCÁRIA |
+      |*4899* |  SERVIÇOS DE TV A CABO/PAGA (CABLE/PAY TV SERVICES) |
+      |*4900* |  UTILID./ELEC/GAS/AGUÁ/SANI (UT../ELEC/GAS/H2O/SANI) |
+      |*5013* |  ATACADISTAS E DISTRIBUIDORES DE ACESSÓRIOS DE VEÍCULOS |
+      |*5021* |  MÓVEIS PARA ESCRITÓRIOS (COMMERCIAL FURNITURE) |
+      |*5039* |  MATERIAL PARA CONSTRUÇÃO E AFINS (CONST. MAT. - DEF) |
+      |*5044* |  A/D DE EQUIPAMENTOS DE FOTOGRAFIA, CÓPIA E MICROFILME |
+      |*5045* |  COMPUTADORES, EQUIPAMENTOS E SOFTWARES |
+      |*5046* |  A/D DE MÁQUINAS E EQUIPAMENTOS PARA EC |
+      |*5047* |  A/D DE EQUIPAMENTO HOSPITALARES, MÉDICOS E OFTÁLMICOS |
+      |*5051* |  CENTROS DE SERVIÇOS DE METAIS (METAL SERVICE CENTERS) |
+      |*5065* |  LOJA ARTIGOS ELETRÔNICOS |
+      |*5072* |  EQUIP./DISTRIB. DE HARDWARE (HARDWARE EQUIP.SUPPLIES) |
+      |*5074* |  EQUIP. DE AQUECIMENTO/ENCANAMENTO (PLUMB./HEAT. E.) |
+      |*5085* |  A/D DE SUPRIMENTOS INDUSTRIAIS (NÃO CLASSIFICADO EM OUTRO) |
+      |*5094* |  JOALHERIA, PEDRAS PRECIOSAS, METAIS |
+      |*5099* |  ATACADISTAS E DISTRIBUIDORES DE MERCADORIAS DURÁVEIS |
+      |*5111* |  A/D DE ARTIGOS DE PAPELARIA E SUPRIMENTOS PARA ESCRITÓRIO |
+      |*5122* |  FARMACEUTICOS/DROGAS (DRUGS/DRUGGISTS SUNDRIES) |
+      |*5131* |  A/D DE TECIDOS E PRODUTOS DE ARMARINHO |
+      |*5137* |  ATACADISTAS E DISTRIBUIDORES DE ROUPAS |
+      |*5139* |  ATACADISTAS E DISTRIBUIDORES DE CALÇADOS |
+      |*5169* |  A/D DE PRODUTOS QUIMICOS E SEMELHANTES (N CLASSIF. EM OUTRO) |
+      |*5172* |  PRODUTOS DE PETRÓLEO (PETROLEUM/PETROLEUM PRODUCTS) |
+      |*5192* |  ATAC. E DISTRIB. DE LIVROS, PERIÓDICOS E JORNAIS |
+      |*5193* |  ATACADISTAS E DISTRIBUIDORES DE FLORES, PLANTAS E SEMENTES |
+      |*5198* |  PINTURA, POLIMENTO E SUPRIM. (PAN.,VARN. & SUPPLIES) |
+      |*5199* |  A/D DE MERCADORIAS NÃO DURÁVEIS (NÃO CLASSIF. EM OUTRO) |
+      |*5200* |  LOJAS DE MATERIAL DE CONSTRUÇÃO (PEQUENO/MÉDIO PORTE) |
+      |*5211* |  LOJAS DE MATERIAL DE CONSTRUÇÃO-PRODUTOS BRUTOS (EX: TIJOLO) |
+      |*5231* |  LOJAS DE VIDROS, TINTAS E PAPÉIS DE PAREDE |
+      |*5251* |  VENDA DE EQUIPAMENTOS, INCLUINDO DE FERRAGEM |
+      |*5261* |  JARDINAGEM |
+      |*5271* |  CORRETORES DE RESIDÊNCIAS MÓVEIS |
+      |*5300* |  VENDA POR ATACADO (WHOLESALE CLUBS) |
+      |*5309* |  DUTY FREE STORES |
+      |*5310* |  LOJAS DE DESCONTO |
+      |*5311* |  LOJAS DE DEPARTAMENTOS (DEPARTMENT STORES) |
+      |*5331* |  LOJAS DE VARIEDADES |
+      |*5399* |  LOJA MERCADORIAS GERAIS |
+      |*5411* |  MERCEARIAS/SUPERMERCADOS (GROCERY STORES/SUPERM.) |
+      |*5422* |  AÇOGUEIRO (FREEZER/MEAT LOCKERS) |
+      |*5441* |  LOJA DE DOCES |
+      |*5451* |  LOJA DE PRODUTOS DE LACTICÍNIOS (DAIRY PROD. STORES) |
+      |*5462* |  CONFEITARIAS (BAKERIES) |
+      |*5499* |  LOJA DE ALIMENTOS VARIADOS (MISC FOOD S. - DEFAULT) |
+      |*5511* |  VENDA DE CARROS E CAMINHÕES (NOVOS E USADOS) |
+      |*5521* |  VENDA DE CARROS USADOS |
+      |*5531* |  Lojas de Automóveis, Lojas de Acessórios Domésticos |
+      |*5532* |  LOJA DE PNEUS |
+      |*5533* |  LOJA DE PEÇAS E ACESSÓRIOS DE CARROS |
+      |*5541* |  ESTAÇÕES DE SERVIÇOS (SERVICE STATIONS) |
+      |*5551* |  VENDA DE BARCOS MOTORIZADOS |
+      |*5561* |  ARTIGOS PARA ACAMPAMENTO |
+      |*5571* |  LOJAS DE MOTOCICLETAS E ACESSÓRIOS |
+      |*5592* |  VENDA DE TRAILLERS |
+      |*5598* |  CONSECIONÁRIA DE SNOWMOBILE |
+      |*5599* |  SERVIÇOS GERIAS PARA CARROS |
+      |*5611* |  ARTIGOS MASCULINOS |
+      |*5621* |  LOJA DE ROUPAS FEMININAS "PRONTA PARA USAR" |
+      |*5631* |  ACESSORIOS FEMININOS E LINGERIES |
+      |*5641* |  ARTIGOS PARA CRIANÇAS E BEBÊS |
+      |*5651* |  ROUPAS MASCULINAS, FEMININAS E INFANTIS |
+      |*5655* |  ROUPA ESPORTIVA |
+      |*5661* |  LOJAS DE SAPATOS |
+      |*5681* |  LOJA DE PELES |
+      |*5691* |  OJA ROUPA UNISSEX |
+      |*5697* |  COSTUREIRAS E ALFAIATES |
+      |*5698* |  LOJAS DE PERUCA |
+      |*5699* |  SERVIÇOS GERIAS PARA VESTIMENTA |
+      |*5712* |  LOJA DE MÓVEIS |
+      |*5713* |  Loja de Pisos |
+      |*5714* |  LOJA DE ESTOFADOS (DRAPERY & UPHOLSTERY STORES) |
+      |*5718* |  LAREIRAS E ACESSÓRIOS (FIREPLACES & ACCESSORIES) |
+      |*5719* |  LOJA DE MÓVEIS ESPECIALIZADA (HOME FURNISHING SPEC.) |
+      |*5722* |  LOJAS DE ELETRODOMÉSTICOS |
+      |*5732* |  LOJA DE ELETRÔNICOS |
+      |*5733* |  LOJA INSTRUMENTO MUSICAIS |
+      |*5734* |  LOJA DE SOFTWARE |
+      |*5735* |  LOJAS DE DISCOS |
+      |*5811* |  DISTRIBUIÇÃO E PRODUÇÃO DE ALIMENTOS |
+      |*5812* |  RESTAURANTES |
+      |*5813* |  BARES, PUBS E CASA NOTURNAS |
+      |*5814* |  LANCHONETES DE COMIDAS RÁPIDAS (FAST FOOD) |
+      |*5815* |  Produtos Digitais - De comunicação social audiovisual, incluindo Livros, Filmes e Música |
+      |*5816* |  Pordutos Digitais - Jogos |
+      |*5817* |  Produtos Digitais - Aplicativos de Software (Exceto Jogos) |
+      |*5818* |  Produtos Digitais - Diversas Categorias |
+      |*5912* |  FARMÁCIAS (DRUG STORES & PHARMACIES) |
+      |*5921* |  CERVEJAS, VINHOS E LICORES (STORE/BEER/WINE/LIQUOR) |
+      |*5931* |  LOJAS DE ARTIGOS DE SEGUNDA MÃO / BRECHÓS |
+      |*5932* |  LOJA DE ANTIGUIDADES (ANTIQUE SHOPS) |
+      |*5933* |  LOJAS DE PENHORES |
+      |*5935* |  DEMOLIÇÕES, SUCATAS, DESMANCHES DE AUTOMÓVEIS |
+      |*5937* |  L. DE REPRODUÇÃO DE ANTIQUIDADES (ANT.REPROD. STORES) |
+      |*5940* |  LOJA DE BICICLETAS - VENDAS E SERVIÇOS |
+      |*5941* |  SERVIÇOS GERAIS PARA ESPORTES |
+      |*5942* |  LIVRARIAS |
+      |*5943* |  PAPELARIAS |
+      |*5944* |  JOALHERIA (JEWERLY STORE) |
+      |*5945* |  LOJA DE BRINQUEDOS |
+      |*5946* |  LOJA DE FOTOGRAFIA |
+      |*5947* |  LOJA DE PRESENTES |
+      |*5948* |  ARTIGOS DE COURO |
+      |*5949* |  ARMARINHOS E LOJAS DE TECIDO |
+      |*5950* |  LOJA DE COPOS/CRISTAIS (GLASSWARE/CRYSTAL STORES) |
+      |*5960* |  MARK.DIRETO DE SEGUROS (DIR. MARKET. INSURANCE SVC) |
+      |*5962* |  SERV. DIRETOS DE VIAGENS (D. MKTG-TRAV. RELATED ARR) |
+      |*5963* |  VENDA DIRETA (DIRECT SELL/DOOR-TO-DOOR) |
+      |*5964* |  CATALOGO DE COMERCIOS (CATALOG MERCHANT) |
+      |*5965* |  CATÁLOGO DE VAREJO (COMB.CATALOG & RETAIL) |
+      |*5966* |  MARKETING DIRETO-SAÍDA (OUTB. TELEMARKETING M.) |
+      |*5967* |  MARKETING DIRETO - ENTRADA (INB. TELEMARKETING M.) |
+      |*5968* |  ASSINATURA COMERCIAL (CONTINUITY/SUBSCRIP. MERCHANT) |
+      |*5969* |  OUTROS VENDEDORES DE MARKETING DIRETO |
+      |*5970* |  PRODUTOS ARTESANAIS |
+      |*5971* |  GALERIA DE ARTE (ART DEALERS & GALLERIES) |
+      |*5972* |  LOJA DE MOEDAS E SELOS |
+      |*5973* |  LOJA DE BENS RELIGIOSOS |
+      |*5975* |  APARELHOS AUDITIVOS - VENDAS E SERVIÇOS |
+      |*5976* |  BENS ORTOPÉDICOS - PRÓTESES |
+      |*5977* |  LOJA DE COSMÉTICOS |
+      |*5978* |  MÁQUINAS DE ESCREVER - VENDA, ALUGUEL E SERVIÇOS |
+      |*5983* |  REVENDEDORES DE COMBUSTÍVEIS (FUEL DEALERS) |
+      |*5992* |  FLORICULTURA |
+      |*5993* |  TABACARIA |
+      |*5994* |  BANCA DE JORNAL E PROVEDOR DE NOTÍCIAS |
+      |*5995* |  PET SHOP |
+      |*5996* |  PISCINAS E BANHEIRAS - SERVIÇOS, SUPRIMENTOS E VENDAS |
+      |*5997* |  NAVALHA ELÉTRICA - VENDA E SERVIÇOS |
+      |*5998* |  LOJAS DE BARRACAS E TOLDOS |
+      |*5999* |  LOJAS ESPECIALIZADAS NÃO LISTADAS ANTERIOMENTE |
+      |*6010* |  BANCOS / LOJAS DE POUPANÇA E INST. FINANCEIRA |
+      |*6011* |  INSTIUIÇÃO FINANCEIRA - CAIXA ELETRÔNICO |
+      |*6012* |  INSTIUIÇÃO FINANCEIRA - AGÊNCIAS E SERVIÇOS |
+      |*6050* |  Similar a Dinheiro (Quase Cash) - Instituição Financeira Cliente |
+      |*6051* |  CASAS DE CÂMBIO |
+      |*6211* |  CORRETORES DE IMÓVEIS (SECURITIES BROKERS/DEALERS) |
+      |*6300* |  VENDA DE SEGUROS(INSURANCE SALES/UNDERWRITE) |
+      |*6513* |  CORRETOR DE IMÓVEIS (ALUGUEL) |
+      |*6532* |  PAGTOS DE TRANSAÇÕES DE INST.FINANCEIRAS |
+      |*6533* |  PAGTOS DE TRANSAÇÕES COMERCIAIS |
+      |*7011* |  HOTEIS (HOTELS/MOTELS/RESORTS) |
+      |*7012* |  TEMPO COMPARTILHADO (TIMESHARE) |
+      |*7032* |  ACAMPAMENTOS RECREATIVOS E DEPORTIVOS |
+      |*7033* |  SERVIÇOS DE ACAMPAMENTOS |
+      |*7210* |  LAVANDARIA, LIMPEZA E SERVIÇOS DE VESTUÁRIO |
+      |*7211* |  LAVANDERIA - FAMILIAR E COMERCIAL |
+      |*7216* |  LAVANDERIA TINTURARIA |
+      |*7217* |  LIMPEZA DE TAPETES E ESTOFADOS |
+      |*7221* |  ESTÚDIOS DE FOTOGRAFIA |
+      |*7230* |  SALAO DE BELEZA / BARBEARIA / DEPILAÇÃO / MANICURE |
+      |*7251* |  LOJA/REPARO DE SAPATOS |
+      |*7261* |  SERVIÇO FUNERÁRIO |
+      |*7273* |  SERVIÇO DE ENCONTROS E ACOMPANHANTE |
+      |*7276* |  SERVIÇOS DE PREP. IMPOST. DE RENDA (TAX PREP. SVCS) |
+      |*7277* |  S. DE ACONSELHAMENTO DE DÍVIDAS, CASAMENTO E PESSOAL |
+      |*7278* |  CLUBES DE COMPRAS |
+      |*7296* |  ALUGUEL DE ROUPAS - FANTASIAS, UNIFORMES E ROUPAS SOCIAIS |
+      |*7297* |  CENTRO DE SAUNAS E MASSAGENS |
+      |*7298* |  CLÍNICAS DE ESTÉTICA FACIAL / CORPORAL |
+      |*7299* |  OUTROS SERVIÇOS PESSOAIS |
+      |*7311* |  PUBLICIDADES |
+      |*7321* |  AGÊNCIAS DE ANÁLISE DE CRÉDITO DE CONSUMIDORES |
+      |*7333* |  SERVIÇOS DE IMPRESSÃO E ARTE GRÁFICA |
+      |*7338* |  COPIADORAS E FOTOCOPIADORAS |
+      |*7339* |  SERVIÇO DE SECRETARIADO E ESTENOGRAFIA |
+      |*7342* |  DEDETIZAÇÃO E DESINFECÇÃO |
+      |*7343* |  SERVIÇO DE EXTERMINIO E DESINFETAÇÃO |
+      |*7349* |  SERVIÇO LIMPEZA E MANUTENÇÃO |
+      |*7361* |  AGÊNCIAS DE EMPREGO |
+      |*7372* |  SERVIÇOS DE PROGRAMAÇÃO DE COMPUTADORES E PROCESS. DE DADOS |
+      |*7375* |  SERVIÇO DE RECUPERAÇÃO DE INFORMAÇÃO |
+      |*7379* |  COMPUTADORES: CONCERTOS E REPAROS |
+      |*7392* |  CONSULTORIA EMPRESARIAL E SERVIÇOS DE RELAÇÕES PÚBLICAS |
+      |*7393* |  AGÊNCIAS DE DETETIVES, PROTECÇÃO E DE SEGURANÇA |
+      |*7394* |  ALUGUEL DE EQUIPAMENTO E MOBÍLIA DE ESCRITÓRIOS |
+      |*7395* |  LABORATÓRIOS FOTOGRÁFICOS |
+      |*7399* |  SERVIÇOS DE NEGÓCIOS |
+      |*7511* |  PARADA DE CAMINHÕES (TRUCK STOP) |
+      |*7512* |  ALUGUEL DE AUTOMÓVEIS (AUTOMOBILE RENTAL AGENCY) |
+      |*7513* |  ALUGUEL DE CAMINHÕES (TRUCK/UTILITY TRAILER RENTALS) |
+      |*7519* |  ALUGUEL DE MOTOR HOME (MOTOR HOME/RV RENTALS) |
+      |*7523* |  ESTACIONAMENTOS E GARAGENS DE CARRO |
+      |*7531* |  FUNILARIAS E PINTURA AUTOMOTIVA |
+      |*7534* |  BORRACHARIAS |
+      |*7535* |  LOJAS DE PINTURA DE AUTTOMÓVEIS |
+      |*7538* |  SERVIÇOS PARA CARROS (NÃO CONCESIONARIA) |
+      |*7542* |  LAVA JATO |
+      |*7549* |  GUINCHO |
+      |*7622* |  CONSERTO DE EQUIP. AUDIO E TV |
+      |*7623* |  CONSERTO DE AR CONDICIONADO |
+      |*7629* |  CONSERTO DE ELETRONICOS |
+      |*7631* |  CONSERTO DE RELÓGIOS E JÓIAS |
+      |*7641* |  RESTAURAÇÃO DE MÓVEIS (FURNITURE REPAIR) |
+      |*7692* |  SERRALHEIROS E SOLDADORES |
+      |*7699* |  LOJA DE CONSERTOS GERAIS E SERVIÇOS RELACIONADOS |
+      |*7829* |  PRODUTORES E DISTRIBUIDORES DE FILMES |
+      |*7832* |  CINEMAS, PRODUÇÕES CINEMATOGRÁFICAS |
+      |*7841* |  LOJAS DE VIDEOS |
+      |*7911* |  DANÇA (ESTUDIOS, ESCOLAS E SALÕES) |
+      |*7922* |  TEATROS, PRODUC. TEATR. E ESPECTAC. |
+      |*7929* |  BANDAS,ORQUESTRAS,ARTISTAS DIVERSOS(N CLASSIFICADO EM OUTRO) |
+      |*7932* |  BARES DE SINUCA |
+      |*7933* |  BOLICHE |
+      |*7941* |  QUADRAS DE ESPORTE / PROPAGANDA ESPORTIVA |
+      |*7991* |  ATRAÇÕES TURÍSTICAS E EXPOSIÇÕES |
+      |*7992* |  AULAS DE GOLF PUBLICA |
+      |*7993* |  FORNECEDORES DE MÁQUINAS DE VIDEOGAME OU JOGOS |
+      |*7994* |  LOJAS DE DIVERSÃO / VIDEO GAME / LAN HOUSE / CIBER CAFÉ |
+      |*7995* |  CASSINOS, LOTERIAS E JOGOS DE AZAR |
+      |*7996* |  PARQUE DE DIVERSAO, CIRCO E AFINS |
+      |*7997* |  ACADEMIAS / CLUBES |
+      |*7998* |  AQUÁRIOS E ZOOLÓGICOS |
+      |*7999* |  SERVIÇOS DE RECREAÇÃO E FESTAS |
+      |*8011* |  MÉDICOS (CLÍNICAS E CONSULTÓRIOS) |
+      |*8021* |  DENTISTAS E ORTODONTISTAS (CLÍNICAS E CONSULTÓRIOS) |
+      |*8031* |  OSTEOPATAS |
+      |*8041* |  QUIROPRAXIA |
+      |*8042* |  OFTAMOLOGISTA E OPTOMETRISTAS |
+      |*8043* |  OPTICIANS, OPTICAL GOODS, AND EYEGLASSES |
+      |*8049* |  TRATAMENTOS PODIÁTRICOS |
+      |*8050* |  CASAS DE REPOUSO, CLÍN. DE RECUPERAÇÃO E ENFERMAGEM |
+      |*8062* |  HOSPITAIS |
+      |*8071* |  ANALISES CLÍNICAS MÉDICAS E DENTAIS |
+      |*8099* |  MEDICINA EM GERAL E PRATICANTES DE SERVIÇOS DE SAÚDE |
+      |*8111* |  SERVIÇOS JURÍDICOS - ADVOGADOS |
+      |*8211* |  EDUCAÇÃO PRIMÁRIA E SECUNDÁRIA (ELEM./SEC.S.) |
+      |*8220* |  UNIVERSIDADES E FACULDADES (COLLEGES/UNIV/JC/PROF.) |
+      |*8241* |  EDUACAÇÃO A DISTÂNCIA (CORRESPONDENCE SCHOOLS) |
+      |*8244* |  ESCOLA DE COMÉRCIOS E SECRETARIADO (BUS./SEC. SCHOOL) |
+      |*8249* |  ESCOLA DE NEGÓCIOS/VOCAÇÕES (TRADE/VOCATIONS S.) |
+      |*8299* |  COLEGIOS (SCHOOLS) |
+      |*8351* |  SERVIÇOS DE CUIDADOS DE CRIANÇAS (CHILD CARE SVCS) |
+      |*8398* |  ORGANIZAÇÕES DE SERVIÇOS BENEFICENTES E SOCIAIS |
+      |*8641* |  ASSOCIAÇÕES CÍVICAS E SOCIAIS |
+      |*8651* |  ORGANIZAÇÕES POLITICAS |
+      |*8661* |  ORGANIZAÇÕES RELIGIOSAS |
+      |*8675* |  ASSOCIAÇÃO DE CARROS |
+      |*8699* |  ORG. SIND., ASSOC. CULT. E OTRS ASSOC. NÃO CLASSIF. |
+      |*8734* |  LABORATÓRIOS DE TESTE (PARA TESTES NÃO MÉDICOS) |
+      |*8911* |  ARQUIRETURA, ENGENHARIA E AGRIMENSURA |
+      |*8931* |  CONTABILIDADE, AUDITORIA E SERVIÇOS DE CONTABILIDADE |
+      |*8999* |  OUTROS SERVIÇOS PROFISSIONAIS DE ESPECIALIZADOS |
+      |*9211* |  PENSÃO ALIMENTÍCIA (COURT COSTS/ALIMONY/SUPPORT) |
+      |*9222* |  MULTAS (FINES) |
+      |*9223* |  PAGAMENTOS DE TÍTULOS E FINANÇAS (BAIL AND BOND P.) |
+      |*9311* |  PAGAMENTOS DE IMPOSTOS (TAX PAYMENTS) |
+      |*9399* |  SERVIÇOS GOVERNAMENTAIS (GOVT SERV - DEFAULT) |
+      |*9402* |  POSTAGENS (POSTAGE STAMPS) |
+      |*9405* |  COMPRAS GOVERNAMENTAIS (INTRA-GOVERNMENT PURCHASES) |
+      |*9406* |  Loteria de Propriedade do Governo (Países Específicos |
+      |*9950* |  DEPART. DE COMPRAS (INTRA- COMPANY PURCHASES) |
+
+      # Table of currency codes
+
+      | Currency Code | Currency |
+      | ----- |----------------------- |
+      | **BRL** |   Brazilian real  |
+      | *USD*  |  United States dollar  |
+      | *EUR*  |  Euro  |
+      | *YER*  |  Yemeni rial |
+      | *ZAR*  |  South African rand  |
+      | *AED*  |  United Arab Emirates dirham |
+      | *AFN*  |  Afghan afghani  |
+      | *ALL*  |  Albanian lek  |
+      | *AMD*  |  Armenian dram |
+      | *ANG*  |  Netherlands Antillean guilder |
+      | *AOA*  |  Angolan kwanza  |
+      | *ARS*  |  Argentine peso  |
+      | *AUD*  |  Australian dollar |
+      | *AWG*  |  Aruban florin |
+      | *AZN*  |  Azerbaijani manat |
+      | *BAM*  |  Bosnia and Herzegovina convertible mark |
+      | *BBD*  |  Barbados dollar |
+      | *BDT*  |  Bangladeshi taka  |
+      | *BGN*  |  Bulgarian lev |
+      | *BIF*  |  Burundian franc |
+      | *BMD*  |  Bermudian dollar  |
+      | *BND*  |  Brunei dollar |
+      | *BOB*  |  Boliviano |
+      | *BSD*  |  Bahamian dollar |
+      | *BWP*  |  Botswana pula |
+      | *BZD*  |  Belize dollar |
+      | *CAD*  |  Canadian dollar |
+      | *CDF*  |  Congolese franc |
+      | *CHF*  |  Swiss franc |
+      | *CLP*  |  Chilean peso  |
+      | *CNY*  |  Chinese yuan[8] |
+      | *COP*  |  Colombian peso  |
+      | *CRC*  |  Costa Rican colon |
+      | *CVE*  |  Cape Verdean escudo |
+      | *CZK*  |  Czech koruna  |
+      | *DJF*  |  Djiboutian franc  |
+      | *DKK*  |  Danish krone  |
+      | *DOP*  |  Dominican peso  |
+      | *DZD*  |  Algerian dinar  |
+      | *EGP*  |  Egyptian pound  |
+      | *ETB*  |  Ethiopian birr  |
+      | *ZMW*  |  Zambian kwacha  |
+      | *FJD*  |  Fiji dollar |
+      | *FKP*  |  Falkland Islands pound  |
+      | *GBP*  |  Pound sterling  |
+      | *GEL*  |  Georgian lari |
+      | *GIP*  |  Gibraltar pound |
+      | *GMD*  |  Gambian dalasi  |
+      | *GNF*  |  Guinean franc |
+      | *GTQ*  |  Guatemalan quetzal  |
+      | *GYD*  |  Guyanese dollar |
+      | *HKD*  |  Hong Kong dollar  |
+      | *HNL*  |  Honduran lempira  |
+      | *HRK*  |  Croatian kuna |
+      | *HTG*  |  Haitian gourde  |
+      | *HUF*  |  Hungarian forint  |
+      | *IDR*  |  Indonesian rupiah |
+      | *ILS*  |  Israeli new shekel  |
+      | *INR*  |  Indian rupee  |
+      | *ISK*  |  Icelandic króna |
+      | *JMD*  |  Jamaican dollar |
+      | *JPY*  |  Japanese yen  |
+      | *KES*  |  Kenyan shilling |
+      | *KGS*  |  Kyrgyzstani som |
+      | *KHR*  |  Cambodian riel  |
+      | *KMF*  |  Comoro franc  |
+      | *KRW*  |  South Korean won  |
+      | *KYD*  |  Cayman Islands dollar |
+      | *KZT*  |  Kazakhstani tenge |
+      | *LAK*  |  Lao kip |
+      | *LBP*  |  Lebanese pound  |
+      | *LKR*  |  Sri Lankan rupee  |
+      | *LRD*  |  Liberian dollar |
+      | *LSL*  |  Lesotho loti  |
+      | *MAD*  |  Moroccan dirham |
+      | *MDL*  |  Moldovan leu  |
+      | *MGA*  |  Malagasy ariary |
+      | *MKD*  |  Macedonian denar  |
+      | *MMK*  |  Myanmar kyat  |
+      | *MNT*  |  Mongolian tögrög  |
+      | *MOP*  |  Macanese pataca |
+      | *MRO*  |  Macanese pataca |
+      | *MUR*  |  Mauritian rupee |
+      | *MVR*  |  Maldivian rufiyaa |
+      | *MWK*  |  Malawian kwacha |
+      | *MXN*  |  Mexican peso  |
+      | *MYR*  |  Malaysian ringgit |
+      | *MZN*  |  Mozambican metical  |
+      | *NAD*  |  Namibian dollar |
+      | *NGN*  |  Nigerian naira  |
+      | *NIO*  |  Nicaraguan córdoba  |
+      | *NOK*  |  Norwegian krone |
+      | *NPR*  |  Nepalese rupee  |
+      | *NZD*  |  New Zealand dollar  |
+      | *PAB*  |  Panamanian balboa |
+      | *PEN*  |  Peruvian sol  |
+      | *PGK*  |  Papua New Guinean kina  |
+      | *PHP*  |  Philippine peso[12] |
+      | *PKR*  |  Pakistani rupee |
+      | *PLN*  |  Polish złoty  |
+      | *PYG*  |  Paraguayan guaraní  |
+      | *QAR*  |  Qatari riyal  |
+      | *RON*  |  Romanian leu  |
+      | *RSD*  |  Serbian dinar |
+      | *RUB*  |  Russian ruble |
+      | *RWF*  |  Rwandan franc |
+      | *SAR*  |  Saudi riyal |
+      | *SBD*  |  Solomon Islands dollar  |
+      | *SCR*  |  Seychelles rupee  |
+      | *SEK*  |  Swedish krona/kronor  |
+      | *SGD*  |  Singapore dollar  |
+      | *SHP*  |  Saint Helena pound  |
+      | *SLL*  |  Sierra Leonean leone  |
+      | *SOS*  |  Somali shilling |
+      | *SRD*  |  Surinamese dollar |
+      | *STD*  |  South Sudanese pound  |
+      | *SZL*  |  Swazi lilangeni |
+      | *THB*  |  Thai baht |
+      | *TJS*  |  Tajikistani somoni  |
+      | *TOP*  |  Tongan paʻanga  |
+      | *TRY*  |  Turkish lira  |
+      | *TTD*  |  Trinidad and Tobago dollar  |
+      | *TWD*  |  New Taiwan dollar |
+      | *TZS*  |  Tanzanian shilling  |
+      | *UAH*  |  Ukrainian hryvnia |
+      | *UGX*  |  Ugandan shilling  |
+      | *UYU*  |  Uruguayan peso  |
+      | *UZS*  |  Uzbekistan som  |
+      | *VND*  |  Vietnamese đồng |
+      | *VUV*  |  Vanuatu vatu  |
+      | *WST*  |  Samoan tala |
+      | *XAF*  |  CFA franc BEAC  |
+      | *XCD*  |  East Caribbean dollar |
+      | *XOF*  |  CFA franc BCEAO |
+      | *XPF*  |  CFP franc (franc Pacifique) |
+
+      # Table of supported countries and document types
+
+      | Country Code | Document Type            | Group              | Country                | Meaning                                                                             |
+      | ---- | --------------- | ------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
+      | *AL*   | *NIPT*            | Vat                | Albania                | Vat Identifier (Numri i Identifikimit për Personin e Tatueshëm)                     |
+      | *AD*   | *NRT*             | Tax                | Andorra                | Tax Identifier (Número de Registre Tributari)                                       |
+      | *AR*   | *CBU*             | Bank               | Argentina              | Bank Account (Clave Bancaria Uniforme)                                              |
+      | *AR*   | *CUIT*            | Tax                | Argentina              | Tax Identity (Código Único de Identificación Tributaria)                            |
+      | *AR*   | *DNI*             | Person             | Argentina              | National Identity (Documento Nacional de Identidad)                                 |
+      | *AT*   | *Businessid*      | Company            | Austria                | Austrian Company Register Numbers                                                   |
+      | *AT*   | *TIN*             | Tax                | Austria                | Austrian tax identification number (Abgabenkontonummer)                             |
+      | *AT*   | *UID*             | VAT                | Austria                | Austrian VAT number (Umsatzsteuer-Identifikationsnummer)                            |
+      | *AT*   | *VNR*             | Person             | Austria                | Austrian social security number(Versicherungsnummer)                                |
+      | *AU*   | *ABN*             | Company            | Australia              | Australian Business Number                                                          |
+      | *AU*   | *ACN*             | Company            | Australia              | Australian Company Number                                                           |
+      | *AU*   | *TFN*             | Tax/Person/Company | Australia              | Australian Tax File Number                                                          |
+      | *BA*   | *JMBG*            | Person             | Bosnia and Herzegovina | Unique Master Citizen Number                                                        |
+      | *BZ*   | *TIN*             | Person/Company     | Belize                 | Brazilian Tax ID ()                                                                 |
+      | *BE*   | *VAT*             | Company            | Belgium                | Belgian Enterprise Number                                                           |
+      | *BG*   | *EGN*             | Person             | Bulgaria               | ЕГН, Единен граждански номер, Bulgarian personal identity codes                     |
+      | *BG*   | *PNF*             | Person             | Bulgaria               | PNF (ЛНЧ, Личен номер на чужденец, Bulgarian number of a foreigner).                |
+      | *BG*   | *VAT*             | Company            | Bulgaria               | Идентификационен номер по ДДС, Bulgarian VAT number                                 |
+      | *BR*   | *CPF*             | Person             | Brazil                 | Brazilian identity number (Cadastro de Pessoas Físicas)                             |
+      | *BR*   | *CNPJ*            | Company            | Brazil                 | Brazilian company number (Cadastro Nacional da Pessoa Jurídica)                     |
+      | *BY*   | *UNP*             | Person/Company     | Belarus                | Учетный номер плательщика, the Belarus VAT number                                   |
+      | *CA*   | *BN*              | Company            | Canada                 | Company Identifier (Canadian Business Number)                                       |
+      | *CA*   | *SIN*             | Person             | Canada                 | Person Identifier (Social Insurance Number)                                         |
+      | *CU*   | *NI*              | Person             | Cuba                   | Número de identidad, Cuban identity card numbers                                    |
+      | *CY*   | *VAT*             | Company            | Cyprus                 | Αριθμός Εγγραφής Φ.Π.Α. (Cypriot VAT number)                                        |
+      | *CZ*   | *DIC*             | Company            | Czech Republic         | Daňové identifikační číslo, Czech VAT number                                        |
+      | *CZ*   | *RC*              | Person             | Czech Republic         | Rodné číslo, the Czech birth number                                                 |
+      | *CH*   | *SSN*             | Person             | Swisserland            | Swiss social security number ("Sozialversicherungsnummer")                          |
+      | *CH*   | *UID*             | Company            | Swisserland            | Unternehmens-Identifikationsnummer, Swiss business identifier                       |
+      | *CH*   | *VAT*             | Company            | Swisserland            | Mehrwertsteuernummer, the Swiss VAT number                                          |
+      | *CL*   | *RUT*             | Tax                | Chile                  | Tax Identifier (Rol Unico Tributario) [RUN]                                         |
+      | *CN*   | *RIC*             | Person             | China                  | Person Identifier (Chinese Resident Identity Card Number)                           |
+      | *CN*   | *USCC*            | Company            | China                  | Company Identifier (Unified Social Credit Code, 统一社会信用代码, China tax number) |
+      | *CO*   | *NIT*             | Tax                | Columbia               | Tax Identifier (Número de Identificación Tributaria)                                |
+      | *CR*   | *CPF*             | Person             | Costa Rica             | Person Identifier (Cédula de Persona Física)                                        |
+      | *CR*   | *CPJ*             | Company            | Costa Rica             | Company Identifier (Cédula de Persona Jurídica)                                     |
+      | *CR*   | *CR*              | Person             | Costa Rica             | Person Identifier (Cédula de Residencia)                                            |
+      | *DE*   | *IDNR*            | Person             | Germany                | Steuerliche Identifikationsnummer, German personal tax number                       |
+      | *DE*   | *STNR*            | Company            | Germany                | Steuernummer, German tax number                                                     |
+      | *DE*   | *VAT*             | Company            | Germany                | Vat identifier                                                                      |
+      | *DK*   | *VAT*             | Company            | Denmark                | Momsregistreringsnummer, Danish VAT number                                          |
+      | *DO*   | *CEDULA*          | Person             | Dominican Republic     | Person Identifier (Cédula de Residencia)                                            |
+      | *DO*   | *NCF*             | Vat                | Dominican Republic     | Tax Receipt Number (Números de Comprobante Fiscal)                                  |
+      | *DO*   | *RNC*             | Tax                | Dominican Republic     | Person Identifier (Registro Nacional del Contribuyente)                             |
+      | *EC*   | *CI*              | Person             | Ecuador                | Ecuadorian person identifier (Cédula de identidad)                                  |
+      | *EE*   | *IK*              | Person             | Estonia                | Isikukood (Estonian Personcal ID number).                                           |
+      | *EE*   | *KMKR*            | Company            | Estonia                | KMKR (Käibemaksukohuslase, Estonian VAT number)                                     |
+      | *EE*   | *Registrikood*    | Company            | Estonia                | Registrikood (Estonian organisation registration code)                              |
+      | *EC*   | *RUC*             | Tax/Vat            | Ecuador                | Ecuadorian company tax number (Registro Único de Contribuyentes)                    |
+      | *SV*   | *NIT*             | Tax                | El Salvador            | Tax Identifier (Número de Identificación Tributaria)                                |
+      | *GT*   | *CUI*             | Person             | Guatemala              | Guatemala person (Código Único de Identificación)                                   |
+      | *GT*   | *NIT*             | Company            | Guatemala              | Guatemala company tax number (Número de Identificación Tributaria)                  |
+      | *FI*   | *ALV*             | Company            | Finland                | ALV nro (Arvonlisäveronumero, Finnish VAT number)                                   |
+      | *FI*   | *HETU*            | Person             | Finland                | HETU (Henkilötunnus, Finnish personal identity code)                                |
+      | *FI*   | *YTUNNUS*         | Company            | Finland                | Y-tunnus (Finnish business identifier)                                              |
+      | *FR*   | *NIF*             | Person             | France                 | NIF (Numéro d'Immatriculation Fiscale, French tax identification number)            |
+      | *GB*   | *UTR*             | Person             | Great Brittan          | UTR (United Kingdom Unique Taxpayer Reference)                                      |
+      | *GB*   | *VAT*             | Company            | Great Brittan          | VAT (United Kingdom (and Isle of Man) VAT registration number)                      |
+      | *GR*   | *AMKA*            | Company            | Greece                 | AMKA (Αριθμός Μητρώου Κοινωνικής Ασφάλισης, Greek social security number)           |
+      | *GR*   | *VAT*             | Company            | Greece                 | FPA, ΦΠΑ, ΑΦΜ (Αριθμός Φορολογικού Μητρώου, the Greek VAT number)                   |
+      | *FR*   | *NIR*             | Person             | France                 | NIR (French personal identification number)                                         |
+      | *FR*   | *SIREN*           | Company            | France                 | SIREN (a French company identification number)                                      |
+      | *FR*   | *SIRET*           | Company            | France                 | SIRET (a French company establishment identification number)                        |
+      | *FR*   | *TVA*             | Vat                | France                 | VAT Identifier                                                                      |
+      | *HR*   | *OIB*             | Person             | Croatia                | Osobni identifikacijski broj, Croatian identification number                        |
+      | *HK*   | *HKID*            | Person             | Hong Kong              | Hong Kong Identity Card                                                             |
+      | *HU*   | *ANUM*            | Vat                | Hungaria               | ANUM (Közösségi adószám, Hungarian VAT number)                                      |
+      | *IS*   | *KENNITALA*       | Person/Company     | Iceland                | Icelandic personal and organisation identity code                                   |
+      | *IS*   | *VSK*             | Vat                | Iceland                | Virðisaukaskattsnúmer, Icelandic VAT number                                         |
+      | *ID*   | *NPWP*            | Person/Company     | Indonesia              | NPWP (Nomor Pokok Wajib Pajak, Indonesian VAT Number).                              |
+      | *IE*   | *PPS*             | Person             | Ireland                | Personal Public Service Number, Irish personal number                               |
+      | *IE*   | *VAT*             | Tax/Vat            | Ireland                | Ireland Value Added Tax ID                                                          |
+      | *IN*   | *AADHAAR*         | Company            | India                  | Indian digital resident personal identity number                                    |
+      | *IN*   | *PAN*             | Person             | India                  | Permanent Account Number, Indian income tax identifier                              |
+      | *IL*   | *IDNR*            | Person             | Israel                 | Identity Number (Mispar Zehut, מספר זהות, Israeli identity number)                  |
+      | *IL*   | *HR*              | Company            | Israel                 | Company Number (מספר חברה, or short ח.פ. Israeli company number)                    |
+      | *IT*   | *AIC*             | Drug               | Italy                  | Italian code for identification of drugs                                            |
+      | *IT*   | *CODICEFISCALE*   | Person             | Italy                  | Codice Fiscale (Italian tax code for individuals)                                   |
+      | *IT*   | *IVA*             | Vat                | Italy                  | Partita IVA (Italian VAT number)                                                    |
+      | *LI*   | *PEID*            | Person/Company     | Liechtenstein          | Personenidentifikationsnummer                                                       |
+      | *LT*   | *ASMENS*          | Person             | Lithuanian             | Asmens kodas (Person Number)                                                        |
+      | *LT*   | *PVM*             | Vat                | Lithuanian             | Pridėtinės vertės mokestis mokėtojo kodas                                           |
+      | *LU*   | *TVA*             | Vat                | Luxembourgian          | taxe sur la valeur ajoutée                                                          |
+      | *LV*   | *PVN*             | Person/Vat         | Latvian                | Pievienotās vērtības nodokļa                                                        |
+      | *MK*   | *JMBG*            | Person             | Macedonia              | Unique Master Citizen Number (Единствен матичен број на граѓанинот)                 |
+      | *MC*   | *TVA*             | Vat                | Monaco                 | taxe sur la valeur ajoutée, Monacan VAT number                                      |
+      | *MD*   | *IDNO*            | Vat                | Moldavia               | Moldavian VAT number                                                                |
+      | *MT*   | *VAT*             | Vat                | Malta                  | Maltese VAT number                                                                  |
+      | *MU*   | *NID*             | Person             | Mauritius              | ID number (Mauritian national identifier)                                           |
+      | *JP*   | *CN*              | Company            | Japan                  | 法人番号, hōjin bangō, Japanese Corporate Number                                    |
+      | *KR*   | *BRN*             | Company            | South Korea            | 사업자 등록 번호, South Korea Business Registration Number)                         |
+      | *KR*   | *RRN*             | Person             | South Korea            | South Korean resident registration number                                           |
+      | *MX*   | *RFC*             | Tax/Vat            | Mexico                 | Tax Identifier (Registro Federal de Contribuyentes)                                 |
+      | *MX*   | *CURP*            | Person             | Mexico                 | Individual Identifier (Clave Única de Registro de Población)                        |
+      | *MX*   | *CLABE*           | Bank               | Mexico                 | Bank Account (Clave Bancaria Estandarizada)                                         |
+      | *ME*   | *JMBG*            | Person             | Montenegro             | Unique Master Citizen Number                                                        |
+      | *MY*   | *NRIC*            | Person             | Malaysia               | Malaysian National Registration Identity Card Number                                |
+      | *NL*   | *BSN*             | Person             | Netherlands            | Burgerservicenummer, the Dutch citizen identification number                        |
+      | *NL*   | *BTW*             | Vat                | Netherlands            | Btw-identificatienummer (Omzetbelastingnummer, the Dutch VAT number)                |
+      | *NL*   | *Onderwijsnummer* | Person             | Netherlands            | Onderwijsnummer (the Dutch student identification number)                           |
+      | *NZ*   | *IRD*             | Person/Company     | New Zealand            | New Zealand Inland Revenue Department (Te Tari Tāke) number                         |
+      | *NZ*   | *BANK*            | Bank               | New Zealand            | New Zealand Bank Account numbers - checkdigit                                       |
+      | *NO*   | *Fodsels*         | Person             | Norway                 | Fødselsnummer (Norwegian birth number, the national identity number)                |
+      | *NO*   | *Konto*           | Bank               | Norway                 | Konto nr. (Norwegian bank account number)                                           |
+      | *NO*   | *MVA*             | Vat                | Norway                 | Merverdiavgift, Norwegian VAT number                                                |
+      | *NO*   | *Orgnr*           | Company            | Norway                 | Organisasjonsnummer, Norwegian organisation number                                  |
+      | *PY*   | *RUC*             | Tax/Vat            | Paraguay               | Tax Identifier (Registro Único de Contribuyentes)                                   |
+      | *PE*   | *CUI*             | Person             | Peru                   | Person Identifier (Cédula Única de Identidad)                                       |
+      | *PE*   | *RUC*             | Tax/Vat            | Peru                   | Tax Identifier (Registro Único de Contribuyentes)                                   |
+      | *PE*   | *CE*              | Person             | Peru                   | Person Identifier (Carné de Extranjería)                                            |
+      | *PK*   | *CNIC*            | Person             | Pakistan               | National Identity Card                                                              |
+      | *PK*   | *NTN*             | Company            | Pakistan               | Tax Identification Number                                                           |
+      | *PL*   | *NIP*             | Vat                | Poland                 | Numer Identyfikacji Podatkowej, Polish VAT number                                   |
+      | *PL*   | *PESEL*           | Person             | Poland                 | Polish national identification number                                               |
+      | *PL*   | *REGON*           | Company            | Poland                 | Rejestr Gospodarki Narodowej, Polish register of economic units                     |
+      | *PT*   | *NIF*             | Vat                | Portugual              | Número de identificação fiscal, Portuguese VAT number                               |
+      | *RU*   | *INN*             | Tax/Vat            | Russia                 | Tax Identifier (Идентификационный номер налогоплательщика)                          |
+      | *RO*   | *CF*              | Vat                | Romania                | Cod de înregistrare în scopuri de TVA, Romanian VAT number                          |
+      | *RO*   | *CNP*             | Person             | Romania                | Cod Numeric Personal, Romanian Numerical Personal Code)                             |
+      | *RO*   | *CUI*             | Tax                | Romania                | Codul Unic de Înregistrare, Romanian company identifier                             |
+      | *RO*   | *ONRC*            | Company            | Romania                | Ordine din Registrul Comerţului, Romanian Trade Register identifier                 |
+      | *SM*   | *COE*             | Company            | San Marcos             | Codice operatore economico, San Marino national tax number                          |
+      | *RS*   | *PIB*             | Vat                | Serbia                 | Poreski identifikacioni broj Tax identification number                              |
+      | *RS*   | *JMBG*            | Person             | Serbia                 | Unique Master Citizen Number (Jedinstveni matični broj građana)                     |
+      | *SE*   | *ORGNR*           | Company            | Sweden                 | Organisationsnummer, Swedish company number                                         |
+      | *SE*   | *PERSONNUMMER*    | Person             | Sweden                 | Personnummer (Swedish personal identity number)                                     |
+      | *SE*   | *VAT*             | Vat                | Sweden                 | VAT (Moms, Mervärdesskatt, Swedish VAT number)                                      |
+      | *SG*   | *UEN*             | Company            | Singapore              | Singapore's Unique Entity Number                                                    |
+      | *TH*   | *IDNR*            | Person             | Thailand               | Thai National ID (บัตรประจำตัวประชาชนไทย)                                           |
+      | *TW*   | *UBN*             | Company            | Taiwan                 | Unified Business Number, 統一編號, Taiwanese tax number                             |
+      | *TR*   | *TCKIMLIK*        | Person             | Turkey                 | Türkiye Cumhuriyeti Kimlik Numarası (Personal ID)                                   |
+      | *TR*   | *VKN*             | Tax                | Turkey                 | Vergi Kimlik Numarası, Turkish tax identification number                            |
+      | *SI*   | *DDV*             | Vatl               | Slovenia               | ID za DDV (Davčna številka, Slovenian VAT number)                                   |
+      | *SI*   | *JMBG*            | Person             | Slovenia               | Unique Master Citizen Number (Enotna matična številka občana)                       |
+      | *SK*   | *DPH*             | Vat                | Slovakia               | IČ DPH (IČ pre daň z pridanej hodnoty, Slovak VAT number)                           |
+      | *SK*   | *RC*              | Person             | Slovakia               | RČ (Rodné číslo, the Slovak birth number)                                           |
+      | *ES*   | *CIF*             | Tax/Vat            | Spain                  | Tax Identifier (Código de Identificación Fiscal)                                    |
+      | *ES*   | *DNI*             | Person             | Spain                  | Identity code (Documento Nacional de Identidad)                                     |
+      | *ES*   | *NIE*             | Person             | Spain                  | Identity code foreigner (Número de Identificación de Extranjero)                    |
+      | *ES*   | *NIF*             | Tax                | Spain                  | Tax Identifier (Número de Identificación Fiscal)                                    |
+      | *UY*   | *RUT*             | Tax/Vat            | Uruguay                | Tax Identifier (Registro Único Tributario)                                          |
+      | *UY*   | *CEDULA*          | Person             | Uruguay                | Person Identifier (Cédula de Residencia)                                            |
+      | *UY*   | *NIE*             | Person             | Uruguay                | ForeignersI identification Number                                                   |
+      | *UA*   | *RNTRC*           | Person             | Ukraine                | КПП, RNTRC (Individual taxpayer registration number in Ukraine)                     |
+      | *UA*   | *EDRPOU*          | Company            | Ukraine                | ЄДРПОУ, EDRPOU (Identifier for enterprises and organizations in Ukraine)            |
+      | *US*   | *EIN*             | Tax/Company        | United States          | Tax Identifier (Employer Identification Number)                                     |
+      | *US*   | *SSN*             | Tax/Individual     | United States          | Tax Identifier (Social Security Number)                                             |
+      | *VE*   | *RIF*             | Vat                | Venezuelan             | Vat Identifier (Registro de Identificación Fiscal)                                  |
+      | *VN*   | *MST*             | Company            | Vietnam                | Mã số thuế, Vietnam tax number                                                      |
+      | *ZA*   | *IDNR*            | Person             | South Africa           | ID number (South African Identity Document number).                                 |
+      | *ZA*   | *TIN*             | Person/Company     | South Africa           | TIN (South African Tax Identification Number).     

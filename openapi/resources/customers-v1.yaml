@@ -1,0 +1,616 @@
+openapi: 3.0.1
+servers:
+  - url: "https://api.malga.io"
+    description: Production
+info:
+  version: "0.5"
+  title: Customers
+tags:
+
+  - name: Customers
+    description: |
+
+      Through the customer’s API you can create, edit, list, and delete shopper’s data for use in card tokenization services, PIX charges, Invoices (payment slips), use in anti-fraud and recurrence engine analysis.
+
+      In order to maintain data integrity, email and document (Personal registration number/National registry of legal entities) information are unique to customers on your Malga account, and no two buyers can be the same.
+
+      # Associating a card with a customer – Basic Flow
+      - Create a customer by entering basic ID and address data
+      - Create a new card token from cardholder data
+      - Create a new card from the generated token and store the generated cardId for future association with the customer
+      - Associate the created card with the created customer using the card association service with buyer
+      - List the cards associated to the buyer using the list of cards per customer service
+
+      ### See [Table of supported countries and document types](#section/Table-of-supported-countries-and-document-types) para criação de customer
+
+      ```bash
+        curl --location --request POST 'https://api.malga.io/v1/customers' \
+          --header 'X-Client-Id: <YOUR_CLIENT_ID>' \
+          --header 'X-Api-Key: <YOUR_SECRET_KEY>' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "name": "Jose Bonifacio Da Silveira",
+              "phoneNumber": "21 98889999099",
+              "email": "jose@gmail.com",
+              "document": {
+                  "number": "72912053013",
+                  "type": "cpf",
+                  "country": "BR"
+              },
+              "address": {
+                  "country": "BR",
+                  "state": "Rio de Janeiro",
+                  "city": "Rio de Janeiro",
+                  "district": "Leblon",
+                  "zipCode": "25650-011",
+                  "street": "Av Geraldo Cardoso",
+                  "streetNumber": "205",
+                  "complement": "Apto 203"
+              }
+          }'
+      ```
+
+      # Basic billing flow using PIX/Invoices (payment slip) from customer
+        - Create a customer with the basic ID and address data
+        - Create a new charge informing as paymentSource, the customer previously created, so that we can use the buyer's data to generate the charge.
+
+      **Basic data of customer object**
+
+      <SchemaDefinition schemaRef="#/components/schemas/CustomerRequest" exampleRef="#/components/examples/CustomerRequest" />
+
+paths:
+  /v1/customers:
+    post:
+      summary: Create new customer
+      operationId: createCustomer
+      parameters:
+        - name: force
+          required: false
+          in: query
+          description: Force customer create avoiding confit when document number already exists
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRequest'
+            example:
+              $ref: '#/components/examples/CustomerRequest/value'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+              example:
+                $ref: '#/components/examples/CustomerResponse/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict document number already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Customers
+    get:
+      summary: List customers
+      operationId: getCustomers
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: page number
+        - in: query
+          name: limit
+          schema:
+            type: string
+          required: false
+          description: total itens per page
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+          required: false
+          description: ordering of items
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: false
+          description: customer identifier
+        - in: query
+          name: document.type
+          schema:
+            type: string
+          required: false
+          description: document type
+        - in: query
+          name: document.number
+          schema:
+            type: string
+          required: false
+          description: document number
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerList'
+              example:
+                $ref: '#/components/examples/CustomerList/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Customers
+  /v1/customers/{id}:
+    get:
+      summary: Get customer details
+      operationId: getCustomerById
+      parameters:
+        - name: id
+          required: true
+          description: Customer ID
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+              example:
+                $ref: '#/components/examples/CustomerResponse/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Customers
+    delete:
+      operationId: deleteCustomer
+      summary: Delete customer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Custome ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Customers
+    patch:
+      operationId: updateCustomer
+      summary: Update customer
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Customer ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerRequest'
+      responses:
+        '200':
+          description: The record has been successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+              example:
+                $ref: '#/components/examples/CustomerResponse/value'
+      tags:
+        - Customers
+  /v1/customers/{customer_id}/cards:
+    post:
+      operationId: linkCard
+      summary: Add credit card to customers
+      parameters:
+        - name: customer_id
+          required: true
+          description: Customer ID
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkCardRequest'
+            example:
+              $ref: '#/components/examples/LinkCardRequest/value'
+      responses:
+        '204':
+          description: The card has been linked successfully.
+      tags:
+        - Customers
+    get:
+      summary: List customer cards
+      operationId: getCustomerCards
+      parameters:
+        - name: customer_id
+          required: true
+          in: path
+          description: Customer ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerCardList'
+              example:
+                $ref: '#/components/examples/CustomerCardList/value'
+      tags:
+        - Customers
+security:
+  - X-Client-ID: []
+    X-Api-Key: []
+components:
+  securitySchemes:
+    X-Client-ID:
+      type: apiKey
+      in: header
+      name: X-Client-Id
+    X-Api-Key:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+  schemas:
+    Address:
+      type: object
+      properties:
+        country:
+          type: string
+          description: Padrão ISO 3166-1 alpha-2
+        state:
+          type: string
+          description: Estado
+        city:
+          type: string
+          description: Cidade
+        district:
+          type: string
+          description: Bairro
+        zipCode:
+          type: string
+          description: Codigo postal CEP
+        street:
+          type: string
+          description: Nome da rua/avenida/travessa
+        streetNumber:
+          type: string
+          description: Numero da rua
+        complement:
+          type: string
+          description: Complemento caso exista
+    Document:
+      type: object
+      properties:
+        type:
+          type: string
+          description: tipo de documento, consultar tabela de tipos suportados
+        number:
+          type: string
+          description: numero do documento formato conforme tipo selecionado
+        country:
+          type: string
+          description: pais de emissão do documento, Padrão ISO 3166-1 alpha-2, consultar tabela de tipos suportados
+          default: BR
+    CustomerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: nome do usuario
+        email:
+          type: string
+          description: email do usuario
+        phoneNumber:
+          type: string
+          description: telefone de contato do usuario
+        document:
+          allOf:
+            - $ref: '#/components/schemas/Document'
+        address:
+          allOf:
+            - $ref: '#/components/schemas/Address'
+      required:
+        - name
+        - phoneNumber
+        - email
+        - document
+    CustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: identificador do customer
+        createdAt:
+          type: string
+          description: data de criação
+        clientId:
+          type: string
+          description: identificador do client
+        name:
+          type: string
+          description: nome do usuario
+        email:
+          type: string
+          description: email do usuario
+        phoneNumber:
+          type: string
+          description: telefones de contato do usuario
+        document:
+          allOf:
+            - $ref: '#/components/schemas/Document'
+        address:
+          allOf:
+            - $ref: '#/components/schemas/Address'
+    CustomerList:
+      properties:
+        meta:
+          type: object
+          $ref: '#/components/schemas/MetaPagination'
+        items:
+          type: array
+          $ref: '#/components/schemas/CustomerResponse'
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: nome do usuario
+        phoneNumber:
+          type: string
+          description: telefone de contato do usuario
+        address:
+          allOf:
+            - $ref: '#/components/schemas/Address'
+    LinkCardRequest:
+      required:
+        - cardId
+      properties:
+        cardId:
+          type: string
+          description: Identificador do cartão a ser associado
+    CustomerCardList:
+      properties:
+        meta:
+          type: object
+          $ref: '#/components/schemas/MetaPagination'
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID do cartão
+              expirationMonth:
+                type: string
+                description: Data de expiração MM
+              expirationYear:
+                type: string
+                description: Data de expiração YYYY
+              brand:
+                type: string
+                enum:
+                  - American Express
+                  - Mastercard
+                  - Visa
+                  - Elo
+                  - Discover
+                  - JCB
+                  - Diners
+                description: Bandeira
+              cvvChecked:
+                type: boolean
+                description: Identifica se o CVV foi verificado
+              fingerprint:
+                type: string
+                description: Hash de identificação única do cartão com base nos dados sensíveis
+              first6digits:
+                type: string
+                description: Primeiros 6 digitos do cartão
+              last4digits:
+                type: string
+                description: Últimos 4 digitos do cartão
+              status:
+                type: string
+                enum:
+                  - failed
+                  - active
+                  - pending
+                description: Status de validação dos dados cartões, failed (cartão inválido para uso), active (cartão válido para uso), pending (validação do cartão pendente, uso autorizado temporariamente)
+              createdAt:
+                type: string
+                description: Data de criação do cartão
+              updatedAt:
+                type: string
+                description: Data de atualização do cartão
+              customerId:
+                type: string
+                description: Customer vinculado ao cartão
+    MetaPagination:
+      properties:
+        itemCount:
+          type: integer
+          description: quantidade de itens na página
+        totalItems:
+          type: integer
+          description: quantidade total de itens na consulta
+        itemsPerPage:
+          type: integer
+          description: quantidade de itens por página
+        totalPages:
+          type: integer
+          description: quantidade total de páginas
+        currentPage:
+          type: integer
+          description: página atual
+    ErrorResponse:
+      properties:
+        error:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/ErrorItem"
+    ErrorItem:
+      properties:
+        type:
+          type: string
+          enum: [api_error, bad_request, invalid_request_error, card_declined]
+        declinedCode:
+          type: string
+          description: Código de retorno da transação em caso de falha na autorização
+        message:
+          type: string
+          description: Descrição breve do erro
+        details:
+          type: array
+          description: Lista contendo objetos que detalham o erro de validação
+      required:
+        - type
+  examples:
+    CustomerResponse:
+      value:
+        id: "82aba896-9e37-45b6-aa90-d510c9050596"
+        clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+        createdAt: "2012-06-30 23:59:59 +0000"
+        name: "Customer test"
+        email: "jose2@gmail.com"
+        document:
+          number: "97055503019"
+          type: "cpf"
+          country: "BR"
+        phoneNumber: "21 98889999099"
+        address:
+          country: "BR"
+          state: "Rio de Janeiro"
+          city: "Rio de Janeiro"
+          district: "Leblon"
+          zipCode: "25650011"
+          street: "Av Geraldo Cardoso"
+          streetNumber: "205"
+          complement: "Apto 203"
+    CustomerList:
+      value:
+        meta:
+          itemCount: 10
+          totalItems: 20
+          itemsPerPage: 10
+          totalPages: 5
+          currentPage: 2
+        items:
+          - id: "82aba896-9e37-45b6-aa90-d510c9050596"
+            clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+            createdAt: "2012-06-30 23:59:59 +0000"
+            name: "Customer test"
+            email: "jose2@gmail.com"
+            phoneNumber: "21 98889999099"
+            document:
+              number: "97055503019"
+              type: "cpf"
+              country: "BR"
+            address:
+              country: "BR"
+              state: "Rio de Janeiro"
+              city: "Rio de Janeiro"
+              district: "Leblon"
+              zipCode: "25650011"
+              street: "Av Geraldo Cardoso"
+              streetNumber: "205"
+              complement: "Apto 203"
+    CustomerRequest:
+      value:
+        name: "Customer test"
+        email: "jose2@gmail.com"
+        phoneNumber: "21 98889999099"
+        document:
+          number: "97055503019"
+          type: "cpf"
+          country: "BR"
+        address:
+          country: "BR"
+          state: "Rio de Janeiro"
+          city: "Rio de Janeiro"
+          district: "Leblon"
+          zipCode: "25650011"
+          street: "Av Geraldo Cardoso"
+          streetNumber: "205"
+          complement: "Apto 203"
+    LinkCardRequest:
+      value:
+        cardId: "82aba896-9e37-45b6-aa90-d510c9050596"
+    CustomerCardList:
+      value:
+        meta:
+          itemCount: 10
+          totalItems: 20
+          itemsPerPage: 10
+          totalPages: 5
+          currentPage: 2
+        items:
+          - id: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+            customerId: "82aba896-9e37-45b6-aa90-d510c9050596"
+            clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+            expirationMonth: "12"
+            expirationYear: "2026"
+            brand: "Visa"
+            cvvChecked: true
+            fingerprint: "cbd4a441-c63c-4dee-ac6b-bfa7fa1df818"
+            first6digits: "401959"
+            last4digits: "9339"
+            createdAt: "2012-06-30 23:59:59 +0000"
+            status: "active"

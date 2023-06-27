@@ -1,0 +1,109 @@
+openapi: 3.0.1
+servers:
+  - url: "https://api.malga.io"
+    description: Production
+info:
+  version: "0.5"
+  title: Malga API Documentation
+  description: |
+    # Authentication
+
+    Malga’s API services are protected through access keys. You can manage your access keys through your dashboard.
+
+    It is important to store your keys privately and safely since they have modification privileges in your account. Do not share your keys, do not leave them fixed in your code, and do not store them on your version control server. We recommend using secret environment variables to make the key available to your application.
+
+    Authentication for all API calls is done through HTTP headers, requiring you to enter your Malga client identifier and secret access key.
+
+    ## X-Client-ID
+
+    | Security Scheme Type | API Key |
+    |-----------------------|-----------|
+    | Header parameter name | `X-Client-ID` |
+
+    ## X-Api-Key
+
+    | Security Scheme Type | API Key |
+    |-----------------------|-----------|
+    | Header parameter name | `X-Api-Key` |
+
+    ## Example authenticated request
+
+    ```bash
+      curl --location --request GET 'https://api.malga.io/v1/' \
+        --header 'X-Client-Id: <YOUR_CLIENT_ID>' \
+        --header 'X-Api-Key: <YOUR_SECRET_KEY>'
+    ```
+tags:
+
+  - name: Webhooks
+    description: |
+
+      Malga uses the webhooks service to notify your system about events occurring in our platform. Through webhooks you can update your system whenever an important event happens, such as updating the status of charges to confirm or cancel a certain payment.
+
+      **Basic data of an event object:**
+
+      <SchemaDefinition schemaRef="#/components/schemas/Event" exampleRef="#/components/examples/Event" />
+
+  - name: Reports
+    description: |
+
+      Through the Reports API, it is possible to export the information of the transactions processed through Malga in .csv file, related to the charges, the transaction, the payment link and the customer who made the payment
+
+  - name: Merchants
+    description: |
+
+      Through the merchant’s APIs, it is possible to create and configure sub-accounts on Malga. A sub account, or merchant, is a registry of a commercial business you have with one of Malga's integrated payment providers. Once you have an account created in one of the accepted providers, you simply request your access credentials to the partner and set up your registration with Malga.
+
+      In the merchant registration, you must inform the mcc category code of your registration with the provider, choose one of the provider types supported by Malga, and set the provider's priority with your access credentials to the provider's API.
+
+      Malga's intelligent transaction routing system is designed to support the use of multiple providers per merchant account. We use the priority defined in the provider registration to prioritize a given provider over another, so you can manage the order of providers that will be used to perform the reattempts.
+
+      ### See [Table of Supported Payment Providers](#section/Provedores-e-meios-de-pagamentos-suportados) to setup credentials
+
+      ### See [Table of MCCs](#section/Table-of-MCCs) to create merchants
+
+      **Basic data of an merchant object**
+
+      <SchemaDefinition schemaRef="#/components/schemas/Merchant" exampleRef="#/components/examples/Merchant" />
+
+  - name: Sellers
+    description: |
+
+      To perform a charge with Split, it is first necessary to create a `seller`. The `sellers` are identified from a unique id.
+
+      Through the `sellers` APIs it is possible to create and configure receivers that will benefit from a Split. A recipient, or a `seller`, is a record of a natural or legal person to whom you are interested in automatically transferring amounts for a certain charge.
+
+      <SchemaDefinition schemaRef="#/components/schemas/Seller" exampleRef="#/components/examples/SellerRequestBusiness" />
+
+  - name: Flows
+    description: |
+
+      Through the `flows` API it is possible to register a flow and manage its payments.
+
+      <SchemaDefinition schemaRef="#/components/schemas/Flow" exampleRef="#/components/examples/FlowResponse" />
+
+x-tagGroups:
+  - name: API Key
+    tags:
+      - Client-token
+  - name: Cards
+    tags:
+      - Tokens
+      - Cards
+  - name: Payments
+    tags:
+      - Customers
+      - Charges
+      - Sessions
+  - name: Notification and events
+    tags:
+      - Webhooks
+  - name: Providers
+    tags:
+      - Merchants
+  - name: Export Data
+    tags:
+      - Reports
+  - name: Appendix
+    tags:
+      - Table of types

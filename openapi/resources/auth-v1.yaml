@@ -1,0 +1,159 @@
+openapi: 3.0.1
+servers:
+  - url: https://api.malga.io
+    description: Production
+info:
+  version: '0.1'
+  title: ClientToken
+tags:
+  - name: Client-token
+    description: |
+      You can create temporary public keys to access the API with limited scope and expiration time.
+
+      We recommend using this type of key when you need to expose the key in a client-side application.
+      In this case, you should make a call to the /auth service from your secret key, requesting the creation of a public key with limited scope.
+
+      The created public key can be used normally as if it were your account's secret key, but with the scope restriction and being invalidated upon expiration.
+
+      **Parameters’ details of the public key’s request:**
+
+      <SchemaDefinition schemaRef="#/components/schemas/AuthRequest" />
+
+      **Public key creation response**
+
+      <SchemaDefinition schemaRef="#/components/schemas/AuthResponse" />
+paths:
+  /v1/auth:
+    post:
+      tags:
+        - Client-token
+      summary: Create public key for client-side integration
+      operationId: createClientToken
+      requestBody:
+        description: Creat authentication token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+            example:
+              $ref: '#/components/examples/AuthRequest/value'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+              example:
+                $ref: '#/components/examples/AuthResponse/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+security:
+  - X-Client-ID: []
+    X-Api-Key: []
+components:
+  securitySchemes:
+    X-Client-ID:
+      type: apiKey
+      in: header
+      name: X-Client-Id
+    X-Api-Key:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+  schemas:
+    AuthRequest:
+      properties:
+        scope:
+          type: array
+          description: determina o escopo de endpoints que a chave terá acesso
+          items:
+            type: string
+            enum:
+              - tokens
+              - charges
+              - cards
+              - webhooks
+        expires:
+          type: integer
+          description: prazo de validade da chave em segundos a partir da criação, zero para não expirar
+          default: 0
+    AuthResponse:
+      properties:
+        scope:
+          type: array
+          description: determina o escopo de endpoints que a chave terá acesso
+          items:
+            type: string
+            enum:
+              - tokens
+              - charges
+              - cards
+              - webhooks
+        expires:
+          type: number
+          description: prazo de validade da chave em segundos a partir da criação, zero para não expirar
+        clientId:
+          type: string
+          description: identificador do cliente na Malga
+        publicKey:
+          type: string
+          description: chave pública criada
+        createdAt:
+          type: string
+          description: Data de criação da chave
+    ErrorResponse:
+      properties:
+        error:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ErrorItem'
+    ErrorItem:
+      properties:
+        type:
+          type: string
+          enum:
+            - api_error
+            - bad_request
+            - invalid_request_error
+            - card_declined
+            - conflict
+        code:
+          type: string
+          description: Código de retorno da erro
+        declinedCode:
+          type: string
+          description: Código de retorno da transação em caso de falha na autorização
+        message:
+          type: string
+          description: Descrição breve do erro
+        details:
+          type: array
+          description: Lista contendo objetos que detalham o erro de validação
+      required:
+        - type
+  examples:
+    AuthRequest:
+      value:
+        scope:
+          - tokens
+        expires: 31104000
+    AuthResponse:
+      value:
+        clientId: cc0b1e41-2936-45c5-947f-93995ffcdc00
+        publicKey: <YOUR_PUBLIC_KEY>
+        scope:
+          - tokens
+        expires: 31104000
+        createdAt: 20200110 00:00:00

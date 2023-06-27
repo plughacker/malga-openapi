@@ -1,0 +1,384 @@
+openapi: 3.0.1
+servers:
+  - url: https://api.malga.io
+    description: Production
+info:
+  version: '0.1'
+  title: Cards
+tags:
+  - name: Tokens
+    description: |
+      **Parameters’ details of the card token's request:**
+
+      <SchemaDefinition schemaRef="#/components/schemas/TokenRequest" exampleRef="#/components/examples/TokenRequest" />
+
+  - name: Cards
+    description: |
+      **Attributues of a card object**
+
+      <SchemaDefinition schemaRef="#/components/schemas/CardRequest"  />
+paths:
+  /v1/tokens:
+    post:
+      tags:
+        - Tokens
+      summary: Create new card token
+      operationId: createToken
+      requestBody:
+        description: Tokenize credit card
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+            example:
+              $ref: '#/components/examples/TokenRequest/value'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                $ref: '#/components/examples/TokenResponse/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/cards:
+    post:
+      tags:
+        - Cards
+      summary: Create a new card from card token
+      operationId: createCard
+      requestBody:
+        description: Create credit card
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardRequest'
+            example:
+              $ref: '#/components/examples/CardRequest/value'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+              example:
+                $ref: '#/components/examples/CardResponse/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Cards
+      summary: List cards
+      operationId: getCards
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: page number
+        - in: query
+          name: limit
+          schema:
+            type: string
+          required: false
+          description: total itens per page
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardList'
+              example:
+                $ref: '#/components/examples/CardList/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/cards/{id}:
+    get:
+      tags:
+        - Cards
+      summary: Get card details
+      operationId: getCardById
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Card ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+              example:
+                $ref: '#/components/examples/CardResponse/value'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+security:
+  - X-Client-ID: []
+    X-Api-Key: []
+components:
+  securitySchemes:
+    X-Client-ID:
+      type: apiKey
+      in: header
+      name: X-Client-Id
+    X-Api-Key:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+  schemas:
+    ErrorResponse:
+      properties:
+        error:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ErrorItem'
+    ErrorItem:
+      properties:
+        type:
+          type: string
+          enum:
+            - api_error
+            - bad_request
+            - invalid_request_error
+            - card_declined
+            - conflict
+        code:
+          type: string
+          description: Código de retorno da erro
+        declinedCode:
+          type: string
+          description: Código de retorno da transação em caso de falha na autorização
+        message:
+          type: string
+          description: Descrição breve do erro
+        details:
+          type: array
+          description: Lista contendo objetos que detalham o erro de validação
+      required:
+        - type
+    TokenRequest:
+      required:
+        - cardHolderName
+        - cardNumber
+        - cardCvv
+        - cardExpirationDate
+      properties:
+        cardHolderName:
+          type: string
+          description: Nome do portador do cartão
+        cardNumber:
+          type: string
+          description: Número do cartão (Sem espaços)
+        cardCvv:
+          type: string
+          description: Código de verificação
+        cardExpirationDate:
+          type: string
+          description: Mês e ano de validade no formato MM/YYYY
+    MetaPagination:
+      properties:
+        itemCount:
+          type: integer
+          description: quantidade de itens na página
+        totalItems:
+          type: integer
+          description: quantidade total de itens na consulta
+        itemsPerPage:
+          type: integer
+          description: quantidade de itens por página
+        totalPages:
+          type: integer
+          description: quantidade total de páginas
+        currentPage:
+          type: integer
+          description: página atual
+    CardRequest:
+      required:
+        - tokenId
+      properties:
+        tokenId:
+          type: string
+          description: Identificador do token gerado
+        merchantId:
+          type: string
+          description: merchant identification used in card validation
+        cvvCheck:
+          type: boolean
+          description: validate cvv using zero dollar authorization from provider
+    CardList:
+      properties:
+        meta:
+          type: object
+          $ref: '#/components/schemas/MetaPagination'
+        items:
+          type: array
+          $ref: '#/components/schemas/CardResponse'
+    TokenResponse:
+      properties:
+        tokenId:
+          type: string
+          description: Token id
+    CardResponse:
+      properties:
+        id:
+          type: string
+          description: ID do cartão
+        expirationMonth:
+          type: string
+          description: Data de expiração MM
+        expirationYear:
+          type: string
+          description: Data de expiração YYYY
+        brand:
+          type: string
+          enum:
+            - American Express
+            - Mastercard
+            - Visa
+            - Elo
+            - Discover
+            - JCB
+            - Diners
+          description: Bandeira
+        cvvChecked:
+          type: boolean
+          description: Identifica se o CVV foi verificado
+        fingerprint:
+          type: string
+          description: Hash de identificação única do cartão com base nos dados sensíveis
+        first6digits:
+          type: string
+          description: Primeiros 6 digitos do cartão
+        last4digits:
+          type: string
+          description: Últimos 4 digitos do cartão
+        status:
+          type: string
+          enum:
+            - failed
+            - active
+            - pending
+          description: Status de validação dos dados cartões, failed (cartão inválido para uso), active (cartão válido para uso), pending (validação do cartão pendente, uso autorizado temporariamente)
+        createdAt:
+          type: string
+          description: Data de criação do cartão
+        updatedAt:
+          type: string
+          description: Data de atualização do cartão
+        customerId:
+          type: string
+          description: Customer vinculado ao cartão
+  examples:
+    ErrorResponse:
+      value:
+        error:
+          type: card_declined
+          declinedCode: invalid_number
+          message: invalid card number
+    TokenRequest:
+      value:
+        cardHolderName: JOSE DAS NEVES
+        cardNumber: '4019598346009339'
+        cardCvv: '123'
+        cardExpirationDate: 12/2026
+    TokenResponse:
+      value:
+        id: 82aba896-9e37-45b6-aa90-d510c9050596
+        clientId: cc0b1e41-2936-45c5-947f-93995ffcdc00
+        createdAt: 2012-06-30 23:59:59 +0000
+    CardRequest:
+      value:
+        tokenId: 82aba896-9e37-45b6-aa90-d510c9050596
+    CardResponse:
+      value:
+        id: 148d5db0-f1c3-439f-902d-f1f268086e1d
+        customerId: 82aba896-9e37-45b6-aa90-d510c9050596
+        clientId: cc0b1e41-2936-45c5-947f-93995ffcdc00
+        expirationMonth: '12'
+        expirationYear: '2026'
+        brand: Visa
+        cvvChecked: true
+        fingerprint: cbd4a441-c63c-4dee-ac6b-bfa7fa1df818
+        first6digits: '401959'
+        last4digits: '9339'
+        createdAt: 2012-06-30 23:59:59 +0000
+        status: active
+    CardList:
+      value:
+        meta:
+          itemCount: 10
+          totalItems: 20
+          itemsPerPage: 10
+          totalPages: 5
+          currentPage: 2
+        items:
+          - id: 148d5db0-f1c3-439f-902d-f1f268086e1d
+            customerId: 82aba896-9e37-45b6-aa90-d510c9050596
+            clientId: cc0b1e41-2936-45c5-947f-93995ffcdc00
+            expirationMonth: '12'
+            expirationYear: '2026'
+            brand: Visa
+            cvvChecked: true
+            fingerprint: cbd4a441-c63c-4dee-ac6b-bfa7fa1df818
+            first6digits: '401959'
+            last4digits: '9339'
+            createdAt: 2012-06-30 23:59:59 +0000
+            status: active
+    MetaPagination:
+      value:
+        itemCount: 10
+        totalItems: 20
+        itemsPerPage: 10
+        totalPages: 5
+        currentPage: 2

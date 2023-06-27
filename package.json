@@ -1,5 +1,5 @@
 {
-  "name": "acme-api",
+  "name": "malga-openapi",
   "version": "1.0.0",
   "dependencies": {
     "@redocly/cli": "1.0.0-beta.127"
@@ -8,6 +8,7 @@
   "scripts": {
     "start": "redocly preview-docs",
     "build": "redocly bundle -o dist/bundle.yaml",
-    "test": "redocly lint"
+    "join": "redocly join openapi/openapi-base.yaml openapi/resources/appendix.yaml openapi/resources/auth-v1.yaml openapi/resources/cards-v1.yaml openapi/resources/charges-v1.yaml openapi/resources/customers-v1.yaml openapi/resources/sessions-v1.yaml -o openapi/openapi.yaml --prefix-components-with-info-prop title",
+    "test": "redocly lint openapi/openapi-base.yaml openapi/resources/appendix.yaml openapi/resources/auth-v1.yaml openapi/resources/cards-v1.yaml openapi/resources/charges-v1.yaml openapi/resources/customers-v1.yaml openapi/resources/sessions-v1.yaml"
   }
 }
