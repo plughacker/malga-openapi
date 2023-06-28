@@ -2,9 +2,14 @@ openapi: 3.0.1
 servers:
   - url: "https://api.malga.io"
     description: Production
+  - url: "https://sandbox-api.malga.io"
+    description: Sandbox
 info:
   version: "0.5"
   title: Malga API Documentation
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   description: |
     # Authentication
 

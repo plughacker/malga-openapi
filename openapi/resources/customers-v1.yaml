@@ -76,8 +76,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CustomerRequest'
-            example:
-              $ref: '#/components/examples/CustomerRequest/value'
+            examples:
+              CustomerRequest:
+                $ref: '#/components/examples/CustomerRequest'
       responses:
         '201':
           description: Created.
@@ -85,8 +86,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerResponse'
-              example:
-                $ref: '#/components/examples/CustomerResponse/value'
+              examples:
+                CustomerResponse:
+                  $ref: '#/components/examples/CustomerResponse'
         '400':
           description: Bad Request
           content:
@@ -157,8 +159,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerList'
-              example:
-                $ref: '#/components/examples/CustomerList/value'
+              examples:
+                CustomerList:
+                  $ref: '#/components/examples/CustomerList'
         '400':
           description: Bad Request
           content:
@@ -191,8 +194,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerResponse'
-              example:
-                $ref: '#/components/examples/CustomerResponse/value'
+              examples:
+                CustomerResponse:
+                  $ref: '#/components/examples/CustomerResponse'
         '400':
           description: Bad Request
           content:
@@ -245,8 +249,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerResponse'
-              example:
-                $ref: '#/components/examples/CustomerResponse/value'
+              examples:
+                CustomerResponse:
+                  $ref: '#/components/examples/CustomerResponse'
       tags:
         - Customers
   /v1/customers/{customer_id}/cards:
@@ -266,8 +271,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LinkCardRequest'
-            example:
-              $ref: '#/components/examples/LinkCardRequest/value'
+            examples:
+              LinkCardRequest:
+                $ref: '#/components/examples/LinkCardRequest'
       responses:
         '204':
           description: The card has been linked successfully.
@@ -290,8 +296,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerCardList'
-              example:
-                $ref: '#/components/examples/CustomerCardList/value'
+              examples:
+                CustomerCardList:
+                  $ref: '#/components/examples/CustomerCardList'
       tags:
         - Customers
 security:
@@ -405,7 +412,9 @@ components:
           $ref: '#/components/schemas/MetaPagination'
         items:
           type: array
-          $ref: '#/components/schemas/CustomerResponse'
+          items:
+            allOf:
+              - $ref: '#/components/schemas/CustomerResponse'
     UpdateCustomerRequest:
       type: object
       properties:
@@ -612,7 +621,6 @@ components:
         items:
           - id: "148d5db0-f1c3-439f-902d-f1f268086e1d"
             customerId: "82aba896-9e37-45b6-aa90-d510c9050596"
-            clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
             expirationMonth: "12"
             expirationYear: "2026"
             brand: "Visa"

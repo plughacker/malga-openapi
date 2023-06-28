@@ -29,16 +29,13 @@ paths:
             examples:
               card:
                 summary: Credit card example
-                value:
-                  $ref: '#/components/examples/ChargeCardRequest/value'
+                $ref: '#/components/examples/ChargeCardRequest'
               pix:
                 summary: PIX example
-                value:
-                  $ref: '#/components/examples/ChargePixRequest/value'
+                $ref: '#/components/examples/ChargePixRequest'
               boleto:
                 summary: Boleto example
-                value:
-                  $ref: '#/components/examples/ChargeBoletoRequest/value'
+                $ref: '#/components/examples/ChargeBoletoRequest'
       responses:
         '201':
           description: Created
@@ -49,16 +46,13 @@ paths:
               examples:
                 card:
                   summary: Credit card charge example
-                  value:
-                    $ref: '#/components/examples/ChargeCardResponse'
+                  $ref: '#/components/examples/ChargeCardResponse'
                 pix:
                   summary: PIX charge example
-                  value:
-                    $ref: '#/components/examples/ChargePixResponse/value'
+                  $ref: '#/components/examples/ChargePixResponse'
                 boleto:
                   summary: Boleto charge example
-                  value:
-                    $ref: '#/components/examples/ChargeBoletoResponse/value'
+                  $ref: '#/components/examples/ChargeBoletoResponse'
         '400':
           description: Bad Request
           content:
@@ -96,8 +90,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargeList'
-              example:
-                $ref: '#/components/examples/ChargeList/value'
+              examples:
+                ChargeList:
+                  $ref: '#/components/examples/ChargeList'
         '400':
           description: Bad Request
           content:
@@ -130,8 +125,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargeResponse'
-              example:
-                $ref: '#/components/examples/ChargeCardResponse/value'
+              examples:
+                ChargeCardResponse:
+                  $ref: '#/components/examples/ChargeCardResponse'
         '400':
           description: Bad Request
           content:
@@ -171,8 +167,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargeResponse'
-              example:
-                $ref: '#/components/examples/ChargeCardResponse/value'
+              examples:
+                ChargeCardResponse:
+                  $ref: '#/components/examples/ChargeCardResponse'
         '400':
           description: Bad Request
           content:
@@ -212,8 +209,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargeResponse'
-              example:
-                $ref: '#/components/examples/ChargeCardResponse/value'
+              examples:
+                ChargeCardResponse:
+                  $ref: '#/components/examples/ChargeCardResponse'
         '400':
           description: Bad Request
           content:
@@ -253,8 +251,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChargeResponse'
-              example:
-                $ref: '#/components/examples/ChargeCardResponse/value'
+              examples:
+                ChargeCardResponse:
+                  $ref: '#/components/examples/ChargeCardResponse'
         '400':
           description: Bad Request
           content:
@@ -1167,31 +1166,6 @@ components:
               number: '97055503019'
               type: cpf
             phoneNumber: 21 98889999099
-    ChargeResponseSplitRequest:
-      summary: Card and Split billing example
-      value:
-        merchantId: 7f8870a2-71c9-4ef0-a531-82000e00b7e1
-        amount: 150
-        currency: BRL
-        statementDescriptor: LOJA JOAO
-        description: Descrição longa da cobrança
-        capture: false
-        orderId: 32c68ff7-902c-408b-b464-cf487c7cda97
-        paymentMethod:
-          paymentType: credit
-          installments: 1
-        paymentSource:
-          sourceType: card
-          card:
-            cardNumber: '5261424250184574'
-            cardCvv: '321'
-            cardExpirationDate: 06/2028
-            cardHolderName: JOAO DA SILVA
-        splitRules:
-          - sellerId: 32c68557-902c-408b-b464-cf487c7cda97
-            percentage: 80
-            liable: true
-            processingFee: true
     ChargeCardResponse:
       value:
         id: 148d5db0-f1c3-439f-902d-f1f268086e1d
@@ -1342,43 +1316,3 @@ components:
                 providerAuthorization:
                   networkAuthorizationCode: '00'
                   networkResponseCode: ''
-    ChargeResponseSplit:
-      summary: Exemplo resposta cobrança Cartão e Split
-      value:
-        id: 148d5db0-f1c3-439f-902d-f1f268086e1d
-        clientId: cc0b1e41-2936-45c5-947f-93995ffcdc00
-        createdAt: 2012-06-30 23:59:59 +0000
-        amount: 150
-        currency: BRL
-        orderId: 32c68ff7-902c-408b-b464-cf487c7cda97
-        statementDescriptor: LOJA JOAO
-        description: Descrição longa da cobrança
-        capture: false
-        status: pre_authorized
-        paymentMethod:
-          paymentType: credit
-          installments: 1
-        paymentSource:
-          sourceType: card
-          cardId: 148d5db0-f1c3-439f-902d-f1f268086e1d
-        transactionRequests:
-          - id: 78601913-a176-4d71-b7e8-abb6fc49a340
-            idempotencyKey: fafe857b176e45d6b12e32fcaf228996
-            providerId: 2c3b57d8-ee43-4b19-bc8a-949a88c51df1
-            providerType: STRIPE
-            transactionId: ch_3JYE7MHjGFBGEeiP0lfTD3Ob
-            amount: 1500
-            authorizationNsu: 1cc8391c-f0d5-4b7a-9fcf-653cea26be13
-            requestStatus: success
-            requestType: authorization
-            responseTs: 2633ms
-            createdAt: '2021-08-12T16:08:39.536Z'
-            updatedAt: '2021-08-12T16:08:42.212Z'
-            providerAuthorization:
-              networkAuthorizationCode: '00'
-              networkResponseCode: ''
-        splitRules:
-          - sellerId: 32c68557-902c-408b-b464-cf487c7cda97
-            percentage: 80
-            liable: true
-            processingFee: true

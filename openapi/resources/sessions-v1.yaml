@@ -28,8 +28,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SessionRequest'
-            example:
-              $ref: '#/components/examples/SessionRequest/value'
+            examples:
+              SessionRequest:
+                $ref: '#/components/examples/SessionRequest'
       responses:
         '201':
           description: Created
@@ -37,8 +38,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResponse'
-              example:
-                $ref: '#/components/examples/SessionResponse/value'
+              examples:
+                SessionResponse:
+                  $ref: '#/components/examples/SessionResponse'
         '400':
           description: Bad Request
           content:
@@ -72,8 +74,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResponse'
-              example:
-                $ref: '#/components/examples/SessionResponse/value'
+              examples:
+                SessionResponse:
+                  $ref: '#/components/examples/SessionResponse'
       tags:
         - Sessions
     patch:
@@ -94,8 +97,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResponse'
-              example:
-                $ref: '#/components/examples/SessionResponse/value'
+              examples:
+                SessionResponse:
+                  $ref: '#/components/examples/SessionResponse'
       tags:
         - Sessions
   /v1/sessions/{id}/charge:
@@ -116,9 +120,12 @@ paths:
             schema:
               $ref: '#/components/schemas/SessionChargeRequest'
             examples:
-              - $ref: '#/components/examples/ChargeCardRequest'
-              - $ref: '#/components/examples/ChargePixRequest'
-              - $ref: '#/components/examples/ChargeBoletoRequest'
+              ChargeCardRequest:
+                $ref: '#/components/examples/ChargeCardRequest'
+              ChargePixRequest:
+                $ref: '#/components/examples/ChargePixRequest'
+              ChargeBoletoRequest:
+                $ref: '#/components/examples/ChargeBoletoRequest'
       responses:
         '201':
           description: Created
@@ -127,9 +134,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionChargeResponse'
               examples:
-                - $ref: '#/components/examples/SessionChargeCardResponse'
-                - $ref: '#/components/examples/SessionChargePixResponse'
-                - $ref: '#/components/examples/SessionChargeBoletoResponse'
+                SessionChargeCardResponse:
+                  $ref: '#/components/examples/SessionCardResponse'
+                SessionChargePixResponse:
+                  $ref: '#/components/examples/SessionPixResponse'
+                SessionChargeBoletoResponse:
+                  $ref: '#/components/examples/SessionBoletoResponse'
         '400':
           description: Bad Request
           content:
@@ -163,8 +173,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CancelSessionResponse'
-              example:
-                $ref: '#/components/examples/CancelSessionResponse/value'
+              examples:
+                CancelSessionResponse:
+                  $ref: '#/components/examples/CancelSessionResponse'
       tags:
         - Sessions
   /v1/sessions/{id}/history:
@@ -1290,6 +1301,7 @@ components:
         amount: 100
         isActive: true
         capture: true
+        name: "session teste"
         merchantId: 1b0c6960-702a-4074-95c2-eed2790c16a1
         dueDate: '2022-10-25T09:28:45.000Z'
         description: Promoção Black Friday
@@ -1303,42 +1315,189 @@ components:
             unitPrice: 1000
             quantity: 1
             tangible: false
-    Session:
-      value:
-        id: 1b0c6960-702a-4074-95c2-eed2790c16a1
-        name: Nome da sessão
-        status: created
-        isActive: true
-        clientId: 1b0c6960-702a-4074-95c2-eed2790c16a1
-        orderId: null
-        amount: 100
-        currency: BRL
-        capture: true
-        merchantId: 69aea152-ba70-49a3-a31c-044ac1651146
-        dueDate: '2022-10-25T09:28:45.000Z'
-        description: Promoção Black Friday
-        statementDescriptor: LOJA JOAO
-        paymentMethods:
-          - paymentType: credit
-            installments: 1
-        items:
-          - id: 78601913-a176-4d71-b7e8-abb6fc49a340
-            name: Item 1
-            description: Descrição do item
-            unitPrice: 10000
-            quantity: 1
-            tangible: false
-        createdAt: '2022-10-25T09:28:45.000Z'
-        updatedAt: '2022-10-25T09:28:45.000Z'
-        publicKey: 1b0c6960-702a-4074-95c2-eed2790c16a1
     ErrorResponse:
       value:
         error:
           type: card_declined
           declinedCode: invalid_number
           message: invalid card number
-        UpdateSessionResponse:
     CancelSessionResponse:
       value:
         id: c1db83fa-723c-4e1f-9722-bc19d1be6791
         status: canceled
+    ChargeCardRequest:
+      value:
+        amount: 150
+        currency: BRL
+        statementDescriptor: "LOJA JOAO"
+        description: "Descrição longa da cobrança"
+        capture: false
+        orderId: "32c68ff7-902c-408b-b464-cf487c7cda97"
+        paymentMethod:
+          paymentType: "credit"
+          installments: 1
+        paymentSource:
+          sourceType: "card"
+          cardId: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+    ChargePixRequest:
+      value:
+        amount: 150
+        currency: BRL
+        statementDescriptor: "LOJA JOAO"
+        description: "Descrição longa da cobrança"
+        capture: true
+        orderId: "32c68ff7-902c-408b-b464-cf487c7cda97"
+        paymentMethod:
+          paymentType: "pix"
+          expiresIn: 3600
+        paymentSource:
+          sourceType: "customer"
+          customer:
+            name: "Customer test"
+            email: "jose2@gmail.com"
+            document:
+              number: "97055503019"
+              type: "cpf"
+            phoneNumber: "21 98889999099"
+    ChargeBoletoRequest:
+      value:
+        merchantId: "7f8870a2-71c9-4ef0-a531-82000e00b7e1"
+        amount: 150
+        currency: BRL
+        statementDescriptor: "LOJA JOAO"
+        description: "Descrição longa da cobrança"
+        capture: true
+        orderId: "32c68ff7-902c-408b-b464-cf487c7cda97"
+        paymentMethod:
+          paymentType: "boleto"
+          expiresDate: "2022-12-31"
+          instructions: "Instruções para pagamento do boleto"
+          interest:
+            days: 1
+            amount: 100
+            percentage: 0.2
+          fine:
+            days: 2
+            amount: 200
+            percentage: 0
+        paymentSource:
+          sourceType: "customer"
+          customer:
+            name: "Customer test"
+            email: "jose2@gmail.com"
+            document:
+              number: "97055503019"
+              type: "cpf"
+            phoneNumber: "21 98889999099"
+    SessionCardResponse:
+      summary: Exemplo resposta cobrança por cartão
+      value:
+        id: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+        merchantId: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        description: "Descrição longa da cobrança"
+        orderId: "32c68ff7-902c-408b-b464-cf487c7cda97"
+        createdAt: "2012-06-30 23:59:59 +0000"
+        amount: 150
+        originalAmount: 150
+        currency: BRL
+        statementDescriptor: "LOJA JOAO"
+        status: pending
+        paymentMethod:
+          paymentType: "credit"
+          installments: 1
+        paymentSource:
+          sourceType: "card"
+          cardId: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        transactionRequests:
+          - id: "78601913-a176-4d71-b7e8-abb6fc49a340"
+            idempotencyKey: "fafe857b176e45d6b12e32fcaf228996"
+            providerId: "2c3b57d8-ee43-4b19-bc8a-949a88c51df1"
+            providerType: "STRIPE"
+            transactionId: "ch_3JYE7MHjGFBGEeiP0lfTD3Ob"
+            amount: 1500
+            authorizationNsu: "1cc8391c-f0d5-4b7a-9fcf-653cea26be13"
+            requestStatus: "success"
+            requestType: "authorization"
+            responseTs: "2633ms"
+            createdAt: "2021-08-12T16:08:39.536Z"
+            updatedAt: "2021-08-12T16:08:42.212Z"
+            providerAuthorization:
+              networkAuthorizationCode: "00"
+              networkResponseCode: ""
+    SessionPixResponse:
+      summary: Exemplo resposta cobrança PIX
+      value:
+        id: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+        merchantId: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        description: "Descrição longa da cobrança"
+        orderId: "32c68ff7-902c-408b-b464-cf487c7cda97"
+        createdAt: "2012-06-30 23:59:59 +0000"
+        amount: 150
+        originalAmount: 150
+        currency: BRL
+        statementDescriptor: "LOJA JOAO"
+        status: pending
+        paymentMethod:
+          paymentType: "pix"
+          expiresIn: 3600
+          qrCodeData: "00020101021126510014BR.GOV.BCB.PIX0129K89VdiUgWN1B3p0IHrgHkNHg9tX5F52040000530398654040.155802BR5913Customer test600062070503***630431C0"
+          qrCodeImageUrl: "https://...."
+        paymentSource:
+          sourceType: "customer"
+          customerId: "1cdcf0c9-eb04-4e43-b9b2-b7a4acdead1f"
+        transactionRequests:
+          - id: "78601913-a176-4d71-b7e8-abb6fc49a340"
+            idempotencyKey: "fafe857b176e45d6b12e32fcaf228996"
+            providerId: "2c3b57d8-ee43-4b19-bc8a-949a88c51df1"
+            providerType: "STRIPE"
+            transactionId: "ch_3JYE7MHjGFBGEeiP0lfTD3Ob"
+            amount: 1500
+            authorizationNsu: "1cc8391c-f0d5-4b7a-9fcf-653cea26be13"
+            requestStatus: "success"
+            requestType: "authorization"
+            responseTs: "2633ms"
+            createdAt: "2021-08-12T16:08:39.536Z"
+            updatedAt: "2021-08-12T16:08:42.212Z"
+            providerAuthorization:
+              networkAuthorizationCode: "00"
+              networkResponseCode: ""
+    SessionBoletoResponse:
+      summary: Exemplo resposta cobrança Boleto
+      value:
+        id: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+        merchantId: "148d5db0-f1c3-439f-902d-f1f268086e1d"
+        description: "Descrição longa da cobrança"
+        orderId: "32c68ff7-902c-408b-b464-cf487c7cda97"
+        createdAt: "2012-06-30 23:59:59 +0000"
+        amount: 150
+        originalAmount: 150
+        currency: BRL
+        statementDescriptor: "LOJA JOAO"
+        status: pending
+        paymentMethod:
+          paymentType: "boleto"
+          expiresDate: "2021-12-31"
+          barcodeData: "412343241324321431241341"
+          barcodeImageUrl: "https://...."
+        paymentSource:
+          sourceType: "customer"
+          customerId: "1cdcf0c9-eb04-4e43-b9b2-b7a4acdead1f"
+        transactionRequests:
+          - id: "78601913-a176-4d71-b7e8-abb6fc49a340"
+            idempotencyKey: "fafe857b176e45d6b12e32fcaf228996"
+            providerId: "2c3b57d8-ee43-4b19-bc8a-949a88c51df1"
+            providerType: "STRIPE"
+            transactionId: "ch_3JYE7MHjGFBGEeiP0lfTD3Ob"
+            amount: 1500
+            authorizationNsu: "1cc8391c-f0d5-4b7a-9fcf-653cea26be13"
+            requestStatus: "success"
+            requestType: "authorization"
+            responseTs: "2633ms"
+            createdAt: "2021-08-12T16:08:39.536Z"
+            updatedAt: "2021-08-12T16:08:42.212Z"
+            providerAuthorization:
+              networkAuthorizationCode: "00"
+              networkResponseCode: ""

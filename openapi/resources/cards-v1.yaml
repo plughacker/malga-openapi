@@ -31,8 +31,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TokenRequest'
-            example:
-              $ref: '#/components/examples/TokenRequest/value'
+            examples:
+              TokenRequest:
+                $ref: '#/components/examples/TokenRequest'
       responses:
         '201':
           description: Created
@@ -40,8 +41,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
-              example:
-                $ref: '#/components/examples/TokenResponse/value'
+              examples:
+                TokenResponse:
+                  $ref: '#/components/examples/TokenResponse'
         '400':
           description: Bad Request
           content:
@@ -67,8 +69,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CardRequest'
-            example:
-              $ref: '#/components/examples/CardRequest/value'
+            examples:
+              CardRequest:
+                $ref: '#/components/examples/CardRequest'
       responses:
         '201':
           description: Created
@@ -76,8 +79,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardResponse'
-              example:
-                $ref: '#/components/examples/CardResponse/value'
+              examples:
+                CardResponse:
+                  $ref: '#/components/examples/CardResponse'
         '400':
           description: Bad Request
           content:
@@ -115,8 +119,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardList'
-              example:
-                $ref: '#/components/examples/CardList/value'
+              examples:
+                CardList:
+                  $ref: '#/components/examples/CardList'
         '400':
           description: Bad Request
           content:
@@ -149,8 +154,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CardResponse'
-              example:
-                $ref: '#/components/examples/CardResponse/value'
+              examples:
+                CardResponse:
+                  $ref: '#/components/examples/CardResponse'
         '400':
           description: Bad Request
           content:
@@ -274,6 +280,9 @@ components:
         id:
           type: string
           description: ID do cartão
+        clientId:
+          type: string
+          description: client identification on Malga
         expirationMonth:
           type: string
           description: Data de expiração MM
@@ -313,9 +322,6 @@ components:
         createdAt:
           type: string
           description: Data de criação do cartão
-        updatedAt:
-          type: string
-          description: Data de atualização do cartão
         customerId:
           type: string
           description: Customer vinculado ao cartão
@@ -334,9 +340,7 @@ components:
         cardExpirationDate: 12/2026
     TokenResponse:
       value:
-        id: 82aba896-9e37-45b6-aa90-d510c9050596
-        clientId: cc0b1e41-2936-45c5-947f-93995ffcdc00
-        createdAt: 2012-06-30 23:59:59 +0000
+        tokenId: 82aba896-9e37-45b6-aa90-d510c9050596
     CardRequest:
       value:
         tokenId: 82aba896-9e37-45b6-aa90-d510c9050596
@@ -375,10 +379,3 @@ components:
             last4digits: '9339'
             createdAt: 2012-06-30 23:59:59 +0000
             status: active
-    MetaPagination:
-      value:
-        itemCount: 10
-        totalItems: 20
-        itemsPerPage: 10
-        totalPages: 5
-        currentPage: 2

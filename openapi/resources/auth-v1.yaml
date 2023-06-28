@@ -36,8 +36,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AuthRequest'
-            example:
-              $ref: '#/components/examples/AuthRequest/value'
+            examples:
+              AuthRequest:
+                $ref: '#/components/examples/AuthRequest'
       responses:
         '201':
           description: Created
@@ -45,8 +46,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
-              example:
-                $ref: '#/components/examples/AuthResponse/value'
+              examples:
+                AuthResponse:
+                  $ref: '#/components/examples/AuthResponse'
         '400':
           description: Bad Request
           content:
