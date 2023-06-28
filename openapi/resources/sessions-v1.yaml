@@ -762,7 +762,8 @@ components:
         settings:
           type: object
           description: Company settings
-          $ref: '#/components/schemas/UserSettings'
+          allOf:
+            - $ref: '#/components/schemas/UserSettings'
     UserSettings:
       properties:
         id:

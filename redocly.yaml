@@ -5,7 +5,7 @@ extends:
 
 apis:
   core@v1: 
-    root: openapi/openapi.yaml
+    root: dist/openapi.yaml
   
 theme:
   openapi:
