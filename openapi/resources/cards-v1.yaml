@@ -16,7 +16,7 @@ tags:
     description: |
       **Attributues of a card object**
 
-      <SchemaDefinition schemaRef="#/components/schemas/CardRequest"  />
+      <SchemaDefinition schemaRef="#/components/schemas/CardResponse"  />
 paths:
   /v1/tokens:
     post:

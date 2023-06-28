@@ -13,7 +13,7 @@ tags:
 
       **Basic data of an charge object**
 
-      <SchemaDefinition schemaRef="#/components/schemas/Charge" exampleRef="#/components/examples/ChargeCard" />
+      <SchemaDefinition schemaRef="#/components/schemas/ChargeResponse" exampleRef="#/components/examples/ChargeResponse" />
 paths:
   /v1/charges:
     post:

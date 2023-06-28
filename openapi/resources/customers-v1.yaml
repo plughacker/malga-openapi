@@ -56,7 +56,7 @@ tags:
 
       **Basic data of customer object**
 
-      <SchemaDefinition schemaRef="#/components/schemas/CustomerRequest" exampleRef="#/components/examples/CustomerRequest" />
+      <SchemaDefinition schemaRef="#/components/schemas/CustomerResponse" exampleRef="#/components/examples/CustomerResponse" />
 
 paths:
   /v1/customers:
