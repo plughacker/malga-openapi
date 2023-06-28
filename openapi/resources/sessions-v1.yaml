@@ -837,46 +837,9 @@ components:
           description: Additional parameters for fraud analysis, required by provider's anti-fraud
           allOf:
             - $ref: '#/components/schemas/FraudAnalysisRequest'
-        splitRules:
-          description: Additional parameters for transacting with Split
-          allOf:
-            - $ref: '#/components/schemas/SplitRules'
       required:
         - paymentMethod
         - paymentSource
-    SplitRulesFaresSchema:
-      type: object
-      properties:
-        mdr:
-          type: number
-          description: Indicates the percentage to be deducted from the value of a transaction, defined by product (credit/debit/ticket), brand and installment range
-        fee:
-          type: number
-          description: Indicates amount in cents to be charged per captured transaction. It is deducted at the time of “setting up” the financial agenda
-    SplitRules:
-      type: array
-      items:
-        type: object
-        properties:
-          sellerId:
-            type: string
-            format: uuid
-            description: seller id
-          percentage:
-            type: number
-            description: percentage of the transaction amount that will be sent to the receiver
-          amount:
-            type: number
-            description: amount that will be sent to the receiver
-          processingFee:
-            type: boolean
-            description: indicates whether the recipient linked to the rule will be charged transaction fees
-          liable:
-            type: boolean
-            description: indicates whether the linked recipient will assume the chargeback risks of the transaction
-          fares:
-            $ref: '#/components/schemas/SplitRulesFaresSchema'
-            description: Informações sobre as taxas que serão cobradas do recebedor - Apenas para sellers com provedor Braspag
     SessionChargeResponse:
       properties:
         id:
