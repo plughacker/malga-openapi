@@ -289,6 +289,9 @@ components:
         expirationYear:
           type: string
           description: Data de expiração YYYY
+        cardHolderName:
+          type: string
+          description: Card cardHolderName
         brand:
           type: string
           enum:
