@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "start": "redocly preview-docs",
-    "build": "redocly join openapi/openapi-base.yaml openapi/resources/appendix.yaml openapi/resources/auth-v1.yaml openapi/resources/cards-v1.yaml openapi/resources/charges-v1.yaml openapi/resources/customers-v1.yaml openapi/resources/sessions-v1.yaml -o dist/openapi.yaml --prefix-components-with-info-prop title",
-    "test": "redocly lint openapi/openapi-base.yaml openapi/resources/appendix.yaml openapi/resources/auth-v1.yaml openapi/resources/cards-v1.yaml openapi/resources/charges-v1.yaml openapi/resources/customers-v1.yaml openapi/resources/sessions-v1.yaml"
+    "build": "redocly join openapi/openapi-base.yaml openapi/resources/appendix.yaml openapi/resources/auth-v1.yaml openapi/resources/cards-v1.yaml openapi/resources/charges-v1.yaml openapi/resources/customers-v1.yaml openapi/resources/sessions-v1.yaml openapi/resources/webhooks-v1.yaml -o dist/openapi.yaml --prefix-components-with-info-prop title",
+    "test": "redocly lint openapi/openapi-base.yaml openapi/resources/appendix.yaml openapi/resources/auth-v1.yaml openapi/resources/cards-v1.yaml openapi/resources/charges-v1.yaml openapi/resources/customers-v1.yaml openapi/resources/sessions-v1.yaml openapi/resources/webhooks-v1.yaml"
   }
 }
