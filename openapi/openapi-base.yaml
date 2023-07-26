@@ -39,16 +39,6 @@ info:
         --header 'X-Api-Key: <YOUR_SECRET_KEY>'
     ```
 tags:
-
-  - name: Webhooks
-    description: |
-
-      Malga uses the webhooks service to notify your system about events occurring in our platform. Through webhooks you can update your system whenever an important event happens, such as updating the status of charges to confirm or cancel a certain payment.
-
-      **Basic data of an event object:**
-
-      <SchemaDefinition schemaRef="#/components/schemas/Event" exampleRef="#/components/examples/Event" />
-
   - name: Reports
     description: |
 

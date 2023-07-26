@@ -1,0 +1,373 @@
+openapi: 3.0.1
+servers:
+  - url: "https://api.malga.io"
+    description: Production
+  - url: "https://sandbox-api.malga.io"
+    description: Sandbox
+info:
+  version: "0.5"
+  title: Webhooks
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+
+  - name: Webhooks
+    description: |
+
+      Malga uses the webhooks service to notify your system about events occurring in our platform. Through webhooks you can update your system whenever an important event happens, such as updating the status of charges to confirm or cancel a certain payment.
+
+      **Basic data of an event object:**
+
+      <SchemaDefinition schemaRef="#/components/schemas/Event" exampleRef="#/components/examples/Event" />
+paths:
+  /v1/webhooks:
+    post:
+      summary: Create new webhook
+      operationId: createWebhook
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/WebhookRequest"
+            examples:
+              WebhookRequest:
+                $ref: "#/components/examples/WebhookRequest"
+      responses:
+        "201":
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookResponse"
+              examples:
+                WebhookResponse:
+                  $ref: "#/components/examples/WebhookResponse"
+      tags:
+        - Webhooks
+    get:
+      summary: List webhooks
+      operationId: ListWebhooks
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: string
+          required: false
+          description: page number
+        - in: query
+          name: limit
+          schema:
+            type: string
+          required: false
+          description: total itens per page
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookList"
+              example:
+                $ref: "#/components/examples/WebhookList/value"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      tags:
+        - Webhooks
+  /v1/webhooks/{id}:
+    get:
+      summary: Get webhook details
+      operationId: getWebhook
+      parameters:
+        - name: id
+          required: true
+          description: Webhook ID
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookResponse"
+              examples:
+                WebhookResponse:
+                  $ref: "#/components/examples/WebhookResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      tags:
+        - Webhooks
+    delete:
+      operationId: deleteWebhook
+      summary: Delete webhook
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Webhook ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Webhooks
+    patch:
+      operationId: updateWebhook
+      summary: Update webhook
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Webhook ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/WebhookRequest"
+      responses:
+        "200":
+          description: The record has been successfully updated.
+      tags:
+        - Webhooks
+security:
+  - X-Client-ID: []
+    X-Api-Key: []
+components:
+  securitySchemes:
+    X-Client-ID:
+      type: apiKey
+      in: header
+      name: X-Client-Id
+    X-Api-Key:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+  schemas:
+    ErrorResponse:
+      properties:
+        error:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ErrorItem'
+    ErrorItem:
+      properties:
+        type:
+          type: string
+          enum:
+            - api_error
+            - bad_request
+            - invalid_request_error
+            - card_declined
+            - conflict
+        code:
+          type: string
+          description: Código de retorno da erro
+        declinedCode:
+          type: string
+          description: Código de retorno da transação em caso de falha na autorização
+        message:
+          type: string
+          description: Descrição breve do erro
+        details:
+          type: array
+          description: Lista contendo objetos que detalham o erro de validação
+      required:
+        - type
+    WebhookRequest:
+      type: object
+      properties:
+        event:
+          type: string
+          description: Evento que deseja receber notificações no seu webhook conforme descrito na seção [Eventos suportados para notificação via webhooks](/docs/webhooks#eventos-suportados-para-notificação-via-webhooks). Deve ser criado um webhook para cada evento, podendo ser utilizado o wildcard `*` no lugar do evento para receber todos os eventos em um único webhook.
+        endpoint:
+          type: string
+          description: URL do seu sistema que deverá receber as notificações de evento
+        version:
+          type: number
+          enum:
+            - 1
+            - 1.1
+          description: Versão da api da Malga que seu webhook implementa
+        status:
+          type: boolean
+          enum: [true, false]
+          description: Identifica se o webhooks está ativo ou não para receber notificações de evento da Malga
+          default: true
+      required:
+        - event
+        - endpoint
+        - version
+        - status
+    WebhookResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: identificador do webhook
+        createdAt:
+          type: string
+          description: data de criação
+        clientId:
+          type: string
+          description: identificador do client
+        event:
+          type: string
+          description: Tipo do evento que deseja receber notificações no seu webhook
+        endpoint:
+          type: string
+          description: URL do seu sistema que deverá receber as notificações de evento
+        version:
+          type: number
+          description: Versão da api da Malga que seu webhook implementa
+          default: 1
+        status:
+          type: boolean
+          description: Identifica se o webhooks está ativo ou não para receber notificações de evento da Malga
+          default: true
+        publicKey:
+          type: string
+          description: Public key used to validate signed messages ed25519
+          default: true
+    WebhookList:
+      properties:
+        meta:
+          type: object
+          $ref: "#/components/schemas/MetaPagination"
+        items:
+          type: array
+          $ref: "#/components/schemas/WebhookResponse"
+    MetaPagination:
+      properties:
+        itemCount:
+          type: integer
+          description: quantidade de itens na página
+        totalItems:
+          type: integer
+          description: quantidade total de itens na consulta
+        itemsPerPage:
+          type: integer
+          description: quantidade de itens por página
+        totalPages:
+          type: integer
+          description: quantidade total de páginas
+        currentPage:
+          type: integer
+          description: página atual
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: identificador único do evento, também enviado no header
+        createdAt:
+          type: string
+          description: data de criação do evento
+        object:
+          type: string
+          description: Tipo do objeto atualizado
+          enum:
+            - transaction
+        event:
+          type: string
+          description: Tipo do evento de atualização que ocorreu no objeto atualizado
+          enum:
+            - pending
+            - pre_authorized
+            - authorized
+            - failed
+            - canceled
+            - voided
+            - charged_back
+            - dispute
+            - dispute_closed
+            - refund_pending
+        apiVersion:
+          type: number
+          description: Versão da api da Malga que seu webhook implementa
+        data:
+          type: object
+          description: Dados do objeto alterado com base na definição do schema de cada objeto
+  examples:
+    WebhookRequest:
+      value:
+        event: "transaction.authorized"
+        endpoint: "https://enuqkxq2lu8be0y.m.pipedream.net"
+        version: 1
+        status: true
+    WebhookResponse:
+      value:
+        id: "31c142ad-4c30-4964-ba24-2df0f2bbb745"
+        event: "transaction.authorized"
+        endpoint: "https://enuqkxq2lu8be0y.m.pipedream.net"
+        version: 1
+        status: true
+        clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+        createdAt: "2021-07-06T21:03:36.590Z"
+        updatedAt: "2021-07-06T21:03:36.590Z"
+    WebhookList:
+      value:
+        meta:
+          itemCount: 10
+          totalItems: 20
+          itemsPerPage: 10
+          totalPages: 5
+          currentPage: 2
+        items:
+          - id: "31c142ad-4c30-4964-ba24-2df0f2bbb745"
+            event: "transaction.authorized"
+            endpoint: "https://enuqkxq2lu8be0y.m.pipedream.net"
+            version: 1
+            status: true
+            clientId: "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+            createdAt: "2021-07-06T21:03:36.590Z"
+            updatedAt: "2021-07-06T21:03:36.590Z"
+    Event:
+      value:
+        id: "5616b19e-4d99-4bd3-b415-4990e5cab4f4"
+        apiVersion: "1"
+        object: "transaction"
+        event: "authorized"
+        createdAt: "2021-07-05T18:56:08.672Z"
+        data:
+          id": "242b9be8-cd60-461d-af27-f31e3d6e3fb7"
+          updatedAt": "2021-07-05T18:56:08.247Z"
+          createdAt": "2021-07-05T18:56:08.247Z"
+          amount": 1500
+          currency: BRL
+          originalAmount": 1500
+          installments": 1
+          clientId": "cc0b1e41-2936-45c5-947f-93995ffcdc00"
+          description": null
+          statementDescriptor": "LOJA JOAO"
+          status": "authorized"
+          capture": true
+          fee": null
+          feeAmount": null
